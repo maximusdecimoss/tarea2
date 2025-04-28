@@ -9,15 +9,15 @@ para organizar y buscar información eficientemente.
 
 El programa ademas nos ofrece un menú interactivo con 9 opciones:
 
-1)Buscar canciones por artista.
-2)Buscar canciones por género.
-3)Buscar canciones por tempo.
-4)Crear una nueva lista de reproducción.
-5)Agregar canciones a una lista de reproducción.
-6)Mostrar canciones de una lista de reproducción.
-7)Guardar una lista de reproducción en un archivo CSV.
-8)Generar canciones aleatorias para pruebas.
-9)Salir del programa.
+1. Buscar canciones por artista.
+2. Buscar canciones por género.
+3. Buscar canciones por tempo.
+4. Crear una nueva lista de reproducción.
+5. Agregar canciones a una lista de reproducción.
+6. Mostrar canciones de una lista de reproducción.
+7. Guardar una lista de reproducción en un archivo CSV.
+8. Generar canciones aleatorias para pruebas.
+9. Salir del programa.
 
 
 Este README explica cómo instalar, ejecutar y usar el programa, con ejemplos detallados para cada funcionalidad.
@@ -98,12 +98,12 @@ Estructuras de Datos
 
 Song: Representa una canción con:
 
-1)id (int): Identificador único.
-2)title (char[100]): Título.
-3)artists (List*): Lista de artistas.
-4)album (char[100]): Álbum.
-5)genre (char[100]): Género.
-6)tempo (float): Tempo en BPM.
+1. id (int): Identificador único.
+2. title (char[100]): Título.
+3. artists (List*): Lista de artistas.
+4. album (char[100]): Álbum.
+5. genre (char[100]): Género.
+6. tempo (float): Tempo en BPM.
 
 Para la organizacion de los distintos datos se opto porla creacion de varios mapas que nos permitieran manipular los datos de forma mas sencilla.
 
