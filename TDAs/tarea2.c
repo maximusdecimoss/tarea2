@@ -385,826 +385,844 @@ void mostrar_artistas_ordenados(List *artistas_list) {
 // Aquí vamos a crear una función que libera la memoria de una lista de artistas. Nos asegurará que no haya fugas de memoria al finalizar la búsqueda por artista, manteniendo el programa eficiente.
 
 void liberar_artistas_list(List *artistas_list) {
+  // Empezamos tomando el primer elemento de la lista.
   ArtistaInfo *info = list_first(artistas_list);
-  while (info) {
-    free(info);
-    info = list_next(artistas_list);
+  // Cada elemento es un "ArtistaInfo", que guarda el nombre del artista y el número de canciones.
+  
+  // Mientras haya elementos en la lista (o sea, mientras no hayamos llegado al final de la libreta), seguimos adelante.
+  while (info) {    
+    free(info);// Liberamos la memoria del elemento actual, como si borráramos una página de la libreta. Esto asegura que no quede ocupando espacio.    
+    info = list_next(artistas_list);// Pasamos al siguiente elemento de la lista, como si diéramos la vuelta a la siguiente página.
   }
-  list_clean(artistas_list);
+  
+  list_clean(artistas_list);// Ahora que ya borramos todos los elementos, limpiamos cualquier rastro que quede de la lista
+  
+  // Finalmente, liberamos la memoria de la lista misma.
   free(artistas_list);
 }
 
 // Ahora crearemos una función que filtra artistas por su letra inicial o por la categoría "Otros" (nombres que no comienzan con letra). Nos ayudará a organizar los artistas en la búsqueda por letra.
+
 void filtrar_artistas_por_letra(List *artistas_list, char letra, List *filtrados, List *otros) {
-  ArtistaInfo *info = list_first(artistas_list);
-  while (info) {
-    char inicial = toupper(info->artista[0]);
-    if (letra == '#') {
-      // Filtrar para "Otros" (nombres que no comienzan con A-Z)
-      if (!isalpha(inicial)) {
-        list_pushBack(otros, info);
+  ArtistaInfo *info = list_first(artistas_list); // Tomaremos el primer artista de la lista para empezar a revisarlo.
+  while (info) { // Mientras haya artistas por revisar, continuaremos con el proceso.
+    char inicial = toupper(info->artista[0]); // Obtendremos la primera letra del nombre del artista y la convertiremos a mayúscula para comparar sin preocuparnos por minúsculas.
+    if (letra == '#') { // Si buscamos "Otros" (nombres que no empiezan con una letra)...
+      if (!isalpha(inicial)) { // ...y la inicial no es una letra (como un número o símbolo)...
+        list_pushBack(otros, info); // ...agregaremos este artista a la lista de "Otros".
       }
-    } else {
-      // Filtrar por letra específica
-      if (inicial == letra) {
-        list_pushBack(filtrados, info);
-      } else if (!isalpha(inicial)) {
-        list_pushBack(otros, info);
+    } else { // Si buscamos una letra específica, como 'A' o 'B'...
+      if (inicial == letra) { // ...y la inicial del artista coincide con la letra que queremos...
+        list_pushBack(filtrados, info); // ...lo agregaremos a la lista de artistas filtrados.
+      } else if (!isalpha(inicial)) { // ...pero si la inicial no es una letra (como un número o símbolo)...
+        list_pushBack(otros, info); // ...lo colocaremos en la lista de "Otros".
       }
     }
-    info = list_next(artistas_list);
+    info = list_next(artistas_list); // Pasaremos al siguiente artista de la lista para continuar revisando.
   }
 }
 
 // Aquí implementaremos una función que lee canciones desde un archivo CSV y las organiza en mapas por ID, género y artista. Es el núcleo de la carga de datos, permitiendo que el programa acceda a las canciones de manera eficiente.
+
 void leer_canciones(Map *canciones_by_id, Map *canciones_by_genero, Map *canciones_by_artista) {
-  FILE *archivo = fopen("C:\\Users\\victor\\OneDrive\\Desktop\\tarea2\\TDAs\\song_dataset_.csv", "r");
-  if (!archivo) {
-    perror("Error al abrir el archivo");
-    return;
+  FILE *archivo = fopen("C:\\Users\\victor\\OneDrive\\Desktop\\tarea2\\TDAs\\song_dataset_.csv", "r"); // Primero que todo abriremos el archivo CSV que contiene las canciones.
+  if (!archivo) { // Si no podemos abrir el archivo...
+    perror("Error al abrir el archivo"); // ...mostraremos un mensaje de error.
+    return; // ...y terminaremos la función.
   }
 
-  char **campos = leer_linea_csv(archivo, ',');
-  if (!campos) {
-    printf("Error: No se pudieron leer los encabezados del CSV.\n");
-    fclose(archivo);
-    return;
+  char **campos = leer_linea_csv(archivo, ','); // Leeremos la primera línea del CSV (los encabezados).
+  if (!campos) { // Si no podemos leer los encabezados...
+    printf("Error: No se pudieron leer los encabezados del CSV.\n"); // ...mostraremos un error.
+    fclose(archivo); // ...cerraremos el archivo.
+    return; // ...y terminaremos la función.
   }
 
-  int k = 0;
-  while ((campos = leer_linea_csv(archivo, ',')) != NULL) {
-    if (k++ > 60000) break;
-    if (k % 10000 == 0) {
-      printf("Procesadas %d canciones...\n", k);
+  int k = 0; // Llevaremos un conteo de las canciones procesadas.
+  while ((campos = leer_linea_csv(archivo, ',')) != NULL) { // Mientras haya líneas en el CSV, las leeremos.
+    if (k++ > 60000) break; // Si procesamos más de 60,000 canciones, pararemos para no sobrecargar.
+    if (k % 10000 == 0) { // Cada 10,000 canciones...
+      printf("Procesadas %d canciones...\n", k); // ...mostraremos un mensaje para mostrar el progreso.
     }
 
-    if (!campos[0] || !campos[2] || !campos[3] || !campos[4] || !campos[18] || !campos[20]) {
-      continue;
+    if (!campos[0] || !campos[2] || !campos[3] || !campos[4] || !campos[18] || !campos[20]) { // Si faltan datos importantes en la línea...
+      continue; // ...pasaremos a la siguiente línea.
     }
 
-    Song *song = malloc(sizeof(Song));
-    if (!song) {
-      fclose(archivo);
-      return;
+    Song *song = malloc(sizeof(Song)); // Reservaremos memoria para una nueva canción.
+    if (!song) { // Si no podemos reservar memoria...
+      fclose(archivo); // ...cerraremos el archivo.
+      return; // ...y terminaremos la función.
     }
 
-    song->id = atoi(campos[0]);
-    strcpy(song->title, campos[4][0] ? campos[4] : "Sin título");
-    song->artists = split_string(campos[2][0] ? campos[2] : "", ";");
-    if (!song->artists) {
-      free(song);
-      continue;
+    song->id = atoi(campos[0]); // Guardaremos el ID de la canción convirtiendo el texto a número.
+    strcpy(song->title, campos[4][0] ? campos[4] : "Sin título"); // Copiaremos el título, o "Sin título" si está vacío.
+    song->artists = split_string(campos[2][0] ? campos[2] : "", ";"); // Dividiremos la lista de artistas en una lista, usando ";" como separador.
+    if (!song->artists) { // Si no podemos crear la lista de artistas...
+      free(song); // ...liberaremos la memoria de la canción.
+      continue; // ...y pasaremos a la siguiente línea.
     }
-    strcpy(song->album, campos[3][0] ? campos[3] : "Sin álbum");
-    strcpy(song->genre, campos[20][0] ? campos[20] : "Desconocido");
-    song->tempo = atof(campos[18]);
+    strcpy(song->album, campos[3][0] ? campos[3] : "Sin álbum"); // Copiaremos el álbum, o "Sin álbum" si está vacío.
+    strcpy(song->genre, campos[20][0] ? campos[20] : "Desconocido"); // Copiaremos el género, o "Desconocido" si está vacío.
+    song->tempo = atof(campos[18]); // Guardaremos el tempo convirtiendo el texto a número decimal.
 
-    int *id_key = malloc(sizeof(int));
-    if (!id_key) {
-      list_clean(song->artists);
-      free(song->artists);
-      free(song);
-      fclose(archivo);
-      return;
+    int *id_key = malloc(sizeof(int)); // Reservaremos memoria para la clave del ID.
+    if (!id_key) { // Si no podemos reservar memoria...
+      list_clean(song->artists); // ...limpiaremos la lista de artistas.
+      free(song->artists); // ...liberaremos la memoria de la lista.
+      free(song); // ...liberaremos la memoria de la canción.
+      fclose(archivo); // ...cerraremos el archivo.
+      return; // ...y terminaremos la función.
     }
-    *id_key = song->id;
-    map_insert(canciones_by_id, id_key, song);
+    *id_key = song->id; // Guardaremos el ID en la clave.
+    map_insert(canciones_by_id, id_key, song); // Insertaremos la canción en el mapa por ID.
 
-    char *genre_key = strdup(song->genre);
-    if (!genre_key) {
-      free(id_key);
-      list_clean(song->artists);
-      free(song->artists);
-      free(song);
-      fclose(archivo);
-      return;
+    char *genre_key = strdup(song->genre); // Crearemos una copia del género para usarla como clave.
+    if (!genre_key) { // Si no podemos crear la copia...
+      free(id_key); // ...liberaremos la clave del ID.
+      list_clean(song->artists); // ...limpiaremos la lista de artistas.
+      free(song->artists); // ...liberaremos la memoria de la lista.
+      free(song); // ...liberaremos la memoria de la canción.
+      fclose(archivo); // ...cerraremos el archivo.
+      return; // ...y terminaremos la función.
     }
-    MapPair *pair = map_search(canciones_by_genero, genre_key);
-    if (!pair) {
-      List *list = list_create();
-      if (!list) {
-        free(genre_key);
-        free(id_key);
-        list_clean(song->artists);
-        free(song->artists);
-        free(song);
-        fclose(archivo);
-        return;
+    MapPair *pair = map_search(canciones_by_genero, genre_key); // Buscaremos si el género ya está en el mapa.
+    if (!pair) { // Si el género no está...
+      List *list = list_create(); // ...crearemos una nueva lista para las canciones de este género.
+      if (!list) { // Si no podemos crear la lista...
+        free(genre_key); // ...liberaremos la clave del género.
+        free(id_key); // ...liberaremos la clave del ID.
+        list_clean(song->artists); // ...limpiaremos la lista de artistas.
+        free(song->artists); // ...liberaremos la memoria de la lista.
+        free(song); // ...liberaremos la memoria de la canción.
+        fclose(archivo); // ...cerraremos el archivo.
+        return; // ...y terminaremos la función.
       }
-      list_pushBack(list, song);
-      map_insert(canciones_by_genero, genre_key, list);
-    } else {
-      list_pushBack(pair->value, song);
-      free(genre_key);
+      list_pushBack(list, song); // Agregaremos la canción a la nueva lista.
+      map_insert(canciones_by_genero, genre_key, list); // Insertaremos la lista en el mapa por género.
+    } else { // Si el género ya existe...
+      list_pushBack(pair->value, song); // ...agregaremos la canción a la lista existente.
+      free(genre_key); // ...y liberaremos la copia del género.
     }
 
-    char *artist = list_first(song->artists);
-    while (artist) {
-      MapPair *artist_pair = map_search(canciones_by_artista, artist);
-      if (!artist_pair) {
-        List *list = list_create();
-        if (!list) {
-          free(id_key);
-          list_clean(song->artists);
-          free(song->artists);
-          free(song);
-          fclose(archivo);
-          return;
+    char *artist = list_first(song->artists); // Tomaremos el primer artista de la lista de artistas.
+    while (artist) { // Mientras haya artistas por revisar...
+      MapPair *artist_pair = map_search(canciones_by_artista, artist); // ...buscaremos si el artista ya está en el mapa.
+      if (!artist_pair) { // Si el artista no está...
+        List *list = list_create(); // ...crearemos una nueva lista para sus canciones.
+        if (!list) { // Si no podemos crear la lista...
+          free(id_key); // ...liberaremos la clave del ID.
+          list_clean(song->artists); // ...limpiaremos la lista de artistas.
+          free(song->artists); // ...liberaremos la memoria de la lista.
+          free(song); // ...liberaremos la memoria de la canción.
+          fclose(archivo); // ...cerraremos el archivo.
+          return; // ...y terminaremos la función.
         }
-        list_pushBack(list, song);
-        char *artist_key = strdup(artist);
-        if (!artist_key) {
-          list_clean(list);
-          free(list);
-          free(id_key);
-          list_clean(song->artists);
-          free(song->artists);
-          free(song);
-          fclose(archivo);
-          return;
+        list_pushBack(list, song); // Agregaremos la canción a la nueva lista.
+        char *artist_key = strdup(artist); // Crearemos una copia del nombre del artista para usarla como clave.
+        if (!artist_key) { // Si no podemos crear la copia...
+          list_clean(list); // ...limpiaremos la lista recién creada.
+          free(list); // ...liberaremos la memoria de la lista.
+          free(id_key); // ...liberaremos la clave del ID.
+          list_clean(song->artists); // ...limpiaremos la lista de artistas.
+          free(song->artists); // ...liberaremos la memoria de la lista.
+          free(song); // ...liberaremos la memoria de la canción.
+          fclose(archivo); // ...cerraremos el archivo.
+          return; // ...y terminaremos la función.
         }
-        map_insert(canciones_by_artista, artist_key, list);
-      } else {
-        list_pushBack(artist_pair->value, song);
+        map_insert(canciones_by_artista, artist_key, list); // Insertaremos la lista en el mapa por artista.
+      } else { // Si el artista ya existe...
+        list_pushBack(artist_pair->value, song); // ...agregaremos la canción a la lista existente.
       }
-      artist = list_next(song->artists);
+      artist = list_next(song->artists); // Pasaremos al siguiente artista de la lista.
     }
   }
 
-  printf("Total de canciones cargadas: %d\n", k);
-  fclose(archivo);
+  printf("Total de canciones cargadas: %d\n", k); // Mostraremos cuántas canciones cargamos en total.
+  fclose(archivo); // Cerraremos el archivo.
 }
 
-// Ahora vamos a crear una función que permite buscar canciones por artista. Pedirá una letra inicial, mostrará artistas disponibles, y luego dejará al usuario seleccionar uno para ver sus canciones.
+/* Ahora vamos a crear una función que permite buscar canciones por artista. Pedirá una letra inicial, mostrará artistas disponibles, y luego dejará al usuario seleccionar uno para ver sus canciones.Esta función es útil para filtrar artistas y mostrar solo aquellos que comienzan con una letra específica, facilitando la búsqueda.La función también maneja la opción de cancelar la búsqueda si el usuario lo desea.*/
+
 void buscar_por_artista(Map *canciones_by_artista) {
-  List *artistas_list = recolectar_artistas(canciones_by_artista);
-  if (!artistas_list) {
-    printf("Error: No se pudo recolectar la lista de artistas.\n");
-    return;
+  List *artistas_list = recolectar_artistas(canciones_by_artista); // Juntaremos todos los artistas en una lista para trabajar con ellos.
+  if (!artistas_list) { // Si no podemos crear la lista de artistas...
+    printf("Error: No se pudo recolectar la lista de artistas.\n"); // ...mostraremos un mensaje de error.
+    return; // ...y terminaremos la función.
   }
 
-  char letra_input;
-  printf("\nIngrese la letra inicial del artista (A-Z, '#' para Otros, o 'q' para cancelar): ");
-  if (!leer_caracter(&letra_input, "", 3)) {
-    liberar_artistas_list(artistas_list);
-    return;
+  char letra_input; // Guardaremos la letra que el usuario ingrese.
+  printf("\nIngrese la letra inicial del artista (A-Z, '#' para Otros, o 'q' para cancelar): "); // Pediremos al usuario que ingrese una letra.
+  if (!leer_caracter(&letra_input, "", 3)) { // Si no podemos leer la letra después de varios intentos...
+    liberar_artistas_list(artistas_list); // ...limpiaremos la lista de artistas.
+    return; // ...y terminaremos la función.
   }
-  if (letra_input != '#' && !isalpha(letra_input)) {
-    printf("Error: Seleccione una letra de A-Z o '#' para Otros.\n");
-    liberar_artistas_list(artistas_list);
-    return;
-  }
-
-  List *filtrados = list_create();
-  List *otros = list_create();
-  if (!filtrados || !otros) {
-    printf("Error: No se pudo crear listas para filtrado.\n");
-    if (filtrados) list_clean(filtrados);
-    if (otros) list_clean(otros);
-    free(filtrados);
-    free(otros);
-    liberar_artistas_list(artistas_list);
-    return;
+  if (letra_input != '#' && !isalpha(letra_input)) { // Si la letra no es '#' ni una letra de A-Z...
+    printf("Error: Seleccione una letra de A-Z o '#' para Otros.\n"); // ...mostraremos un error.
+    liberar_artistas_list(artistas_list); // ...limpiaremos la lista de artistas.
+    return; // ...y terminaremos la función.
   }
 
-  filtrar_artistas_por_letra(artistas_list, letra_input, filtrados, otros);
-
-  if (letra_input == '#') {
-    printf("\nArtistas en la categoría 'Otros':\n");
-    mostrar_artistas_ordenados(otros);
-  } else {
-    printf("\nArtistas que comienzan con '%c':\n", letra_input);
-    mostrar_artistas_ordenados(filtrados);
+  List *filtrados = list_create(); // Crearemos una lista para los artistas que empiecen con la letra elegida.
+  List *otros = list_create(); // Crearemos otra lista para los artistas que no empiecen con una letra (como números o símbolos).
+  if (!filtrados || !otros) { // Si no podemos crear alguna de las listas...
+    printf("Error: No se pudo crear listas para filtrado.\n"); // ...mostraremos un error.
+    if (filtrados) list_clean(filtrados); // ...limpiaremos la lista de filtrados si existe.
+    if (otros) list_clean(otros); // ...limpiaremos la lista de otros si existe.
+    free(filtrados); // ...liberaremos la memoria de la lista de filtrados.
+    free(otros); // ...liberaremos la memoria de la lista de otros.
+    liberar_artistas_list(artistas_list); // ...limpiaremos la lista de artistas.
+    return; // ...y terminaremos la función.
   }
 
-  if (list_size(filtrados) == 0 && (letra_input != '#' || list_size(otros) == 0)) {
-    printf("No hay artistas disponibles para la selección.\n");
-    list_clean(filtrados);
-    list_clean(otros);
-    free(filtrados);
-    free(otros);
-    liberar_artistas_list(artistas_list);
-    return;
+  filtrar_artistas_por_letra(artistas_list, letra_input, filtrados, otros); // Separaremos los artistas en las listas de filtrados y otros según la letra.
+
+  if (letra_input == '#') { // Si el usuario eligió '#' para "Otros"...
+    printf("\nArtistas en la categoría 'Otros':\n"); // ...mostraremos un encabezado para la categoría "Otros".
+    mostrar_artistas_ordenados(otros); // ...y listaremos los artistas que no empiezan con letra.
+  } else { // Si el usuario eligió una letra específica...
+    printf("\nArtistas que comienzan con '%c':\n", letra_input); // ...mostraremos un encabezado con la letra elegida.
+    mostrar_artistas_ordenados(filtrados); // ...y listaremos los artistas que empiecen con esa letra.
   }
 
-  char artista[100];
-  if (!leer_cadena(artista, sizeof(artista), "\nIngrese el nombre del artista (o 'q' para cancelar): ", 3)) {
-    list_clean(filtrados);
-    list_clean(otros);
-    free(filtrados);
-    free(otros);
-    liberar_artistas_list(artistas_list);
-    return;
+  if (list_size(filtrados) == 0 && (letra_input != '#' || list_size(otros) == 0)) { // Si no hay artistas en la lista correspondiente...
+    printf("No hay artistas disponibles para la selección.\n"); // ...informaremos que no hay artistas para elegir.
+    list_clean(filtrados); // ...limpiaremos la lista de filtrados.
+    list_clean(otros); // ...limpiaremos la lista de otros.
+    free(filtrados); // ...liberaremos la memoria de la lista de filtrados.
+    free(otros); // ...liberaremos la memoria de la lista de otros.
+    liberar_artistas_list(artistas_list); // ...limpiaremos la lista de artistas.
+    return; // ...y terminaremos la función.
   }
 
-  MapPair *par = map_search(canciones_by_artista, artista);
-  if (!par) {
-    printf("No se encontraron canciones para el artista '%s'.\n", artista);
-    list_clean(filtrados);
-    list_clean(otros);
-    free(filtrados);
-    free(otros);
-    liberar_artistas_list(artistas_list);
-    return;
+  char artista[100]; // Prepararemos un espacio para guardar el nombre del artista que el usuario elija.
+  if (!leer_cadena(artista, sizeof(artista), "\nIngrese el nombre del artista (o 'q' para cancelar): ", 3)) { // Si no podemos leer el nombre del artista...
+    list_clean(filtrados); // ...limpiaremos la lista de filtrados.
+    list_clean(otros); // ...limpiaremos la lista de otros.
+    free(filtrados); // ...liberaremos la memoria de la lista de filtrados.
+    free(otros); // ...liberaremos la memoria de la lista de otros.
+    liberar_artistas_list(artistas_list); // ...limpiaremos la lista de artistas.
+    return; // ...y terminaremos la función.
   }
 
-  mostrar_canciones(par->value, artista);
-  list_clean(filtrados);
-  list_clean(otros);
-  free(filtrados);
-  free(otros);
-  liberar_artistas_list(artistas_list);
+  MapPair *par = map_search(canciones_by_artista, artista); // Buscaremos el artista en el mapa de canciones por artista.
+  if (!par) { // Si no encontramos al artista...
+    printf("No se encontraron canciones para el artista '%s'.\n", artista); // ...informaremos que no hay canciones para ese artista.
+    list_clean(filtrados); // ...limpiaremos la lista de filtrados.
+    list_clean(otros); // ...limpiaremos la lista de otros.
+    free(filtrados); // ...liberaremos la memoria de la lista de filtrados.
+    free(otros); // ...liberaremos la memoria de la lista de otros.
+    liberar_artistas_list(artistas_list); // ...limpiaremos la lista de artistas.
+    return; // ...y terminaremos la función.
+  }
+
+  mostrar_canciones(par->value, artista); // Mostraremos las canciones del artista elegido.
+  list_clean(filtrados); // Limpiaremos la lista de filtrados.
+  list_clean(otros); // Limpiaremos la lista de otros.
+  free(filtrados); // Liberaremos la memoria de la lista de filtrados.
+  free(otros); // Liberaremos la memoria de la lista de otros.
+  liberar_artistas_list(artistas_list); // Limpiaremos la lista de artistas.
 }
+// Ahora vamos a crear una función que valida el género ingresado por el usuario. Verificará si es una cadena válida y si existe en nuestro mapa de canciones por género. Devolverá 1 si todo está bien, o 0 si hay algún problema.
 
-// Aquí implementaremos una función que valida si un género ingresado por el usuario existe en el mapa de géneros. Nos ayudará a asegurar que la búsqueda por género sea válida antes de continuar.
 int validar_genero(Map *canciones_by_genero, char *genero_input, MapPair **par) {
-  if (!es_cadena_valida(genero_input)) {
-    printf("Error: Género inválido.\n");
-    return 0;
+  if (!es_cadena_valida(genero_input)) { // primero verificaremos si el género ingresado es una cadena válida.
+    printf("Error: Género inválido.\n"); // Si no es válido, mostraremos un mensaje de error.
+    return 0; // Terminaremos la función con un error.
   }
 
-  *par = map_search(canciones_by_genero, genero_input);
-  if (!*par) {
-    printf("No se encontraron canciones para el género '%s'.\n", genero_input);
-    return 0;
+  *par = map_search(canciones_by_genero, genero_input); // Buscaremos el género en el mapa de canciones por género.
+  if (!*par) { // Si no encontramos el género...
+    printf("No se encontraron canciones para el género '%s'.\n", genero_input); // ...informaremos que no hay canciones para ese género.
+    return 0; // Terminaremos la función con un error.
   }
-  return 1;
+  return 1; // Si todo está bien, confirmaremos que el género es válido y existe.
 }
 
 // Ahora crearemos una función que filtra canciones por la letra inicial de su título. Nos permitirá mostrar solo las canciones que comienzan con una letra específica dentro de un género.
+
 List *filtrar_canciones_por_letra(List *canciones, char letra) {
-  List *filtradas = list_create();
-  Song *cancion = list_first(canciones);
-  while (cancion) {
-    if (toupper(cancion->title[0]) == letra) {
-      list_pushBack(filtradas, cancion);
+  List *filtradas = list_create(); // Crearemos una nueva lista para guardar las canciones que cumplan con el criterio.
+  Song *cancion = list_first(canciones); // Tomaremos la primera canción de la lista para empezar a revisarla.
+  while (cancion) { // Mientras haya canciones por revisar, continuaremos.
+    if (toupper(cancion->title[0]) == letra) { // Si la primera letra del título, en mayúscula, coincide con la letra dada...
+      list_pushBack(filtradas, cancion); // ...agregaremos la canción a la lista filtrada.
     }
-    cancion = list_next(canciones);
+    cancion = list_next(canciones); // Pasaremos a la siguiente canción para seguir revisando.
   }
-  return filtradas;
+  return filtradas; // Devolveremos la lista con las canciones filtradas.
 }
 
-// Aquí vamos a implementar una función que guarda las canciones filtradas en un archivo de texto. Nos ayudará a exportar los resultados de la búsqueda por género, con un formato claro y legible.
+// En esta función, guardaremos en un archivo las canciones filtradas de un género específico que comienzan con una letra dada, incluyendo un encabezado con la información del género y la letra.
+
 void guardar_canciones_filtradas(List *filtradas, const char *genero, char letra, const char *nombre_archivo) {
-  FILE *archivo = fopen(nombre_archivo, "w");
-  if (!archivo) {
-    printf("Error al crear el archivo '%s'.\n", nombre_archivo);
-    return;
+  FILE *archivo = fopen(nombre_archivo, "w"); // Abriremos un nuevo archivo en modo escritura para guardar las canciones.
+  if (!archivo) { // Si no podemos crear el archivo...
+    printf("Error al crear el archivo '%s'.\n", nombre_archivo); // ...mostraremos un mensaje de error.
+    return; // ...y terminaremos la función.
   }
 
-  fprintf(archivo, "Canciones del género '%s' que comienzan con '%c':\n", genero, letra);
-  Song *cancion = list_first(filtradas);
-  while (cancion) {
-    fprintf(archivo, "%s (ID: %d)\n", cancion->title, cancion->id);
-    cancion = list_next(filtradas);
+  fprintf(archivo, "Canciones del género '%s' que comienzan con '%c':\n", genero, letra); // Escribiremos un encabezado en el archivo con el género y la letra.
+  Song *cancion = list_first(filtradas); // Tomaremos la primera canción de la lista filtrada para empezar a procesarla.
+  while (cancion) { // Mientras haya canciones por revisar, continuaremos.
+    fprintf(archivo, "%s (ID: %d)\n", cancion->title, cancion->id); // Escribiremos el título y el ID de la canción en el archivo.
+    cancion = list_next(filtradas); // Pasaremos a la siguiente canción para seguir procesando.
   }
 
-  fclose(archivo);
-  printf("Canciones filtradas guardadas en '%s'.\n", nombre_archivo);
+  fclose(archivo); // Cerraremos el archivo después de escribir todo.
+  printf("Canciones filtradas guardadas en '%s'.\n", nombre_archivo); // Informaremos al usuario que las canciones se guardaron correctamente.
 }
 
-// Ahora implementaremos una función que permite buscar canciones por género. Mostrará los géneros disponibles, pedirá un género y una letra inicial, y guardará las canciones filtradas en un archivo.
+// En esta función, buscaremos canciones por género. Mostraremos los géneros disponibles, pediremos un género y una letra inicial, y guardaremos las canciones filtradas en un archivo.
+
 void buscar_por_genero(Map *canciones_by_genero) {
-  List *generos_list = list_create();
-  if (!generos_list) {
-    printf("Error: No se pudo crear lista de géneros.\n");
-    return;
+  List *generos_list = list_create(); // Crearemos una lista para almacenar los géneros disponibles.
+  if (!generos_list) { // Si no podemos crear la lista...
+    printf("Error: No se pudo crear lista de géneros.\n"); // ...mostraremos un mensaje de error.
+    return; // ...y terminaremos la función.
   }
 
-  size_t max_len = 0;
-  int num_generos = 0;
-  MapPair *pair = map_first(canciones_by_genero);
-  while (pair) {
-    char *genero = pair->key;
-    int is_valid = 1;
-    for (int i = 0; genero[i]; i++) {
-      if (!isalpha(genero[i]) && genero[i] != '-' && genero[i] != ' ') {
-        is_valid = 0;
-        break;
+  size_t max_len = 0; // Guardaremos la longitud máxima de los nombres de géneros para alinear la salida.
+  int num_generos = 0; // Contaremos cuántos géneros válidos encontramos.
+  MapPair *pair = map_first(canciones_by_genero); // Tomaremos el primer género del mapa para empezar a revisarlo.
+  while (pair) { // Mientras haya géneros por revisar, continuaremos.
+    char *genero = pair->key; // Obtendremos el nombre del género actual.
+    int is_valid = 1; // Asumiremos que el género es válido hasta que se demuestre lo contrario.
+    for (int i = 0; genero[i]; i++) { // Recorreremos cada carácter del género.
+      if (!isalpha(genero[i]) && genero[i] != '-' && genero[i] != ' ') { // Si el carácter no es letra, guión ni espacio...
+        is_valid = 0; // ...marcaremos el género como no válido.
+        break; // ...y dejaremos de revisar.
       }
     }
-    if (is_valid) {
-      GeneroInfo *info = malloc(sizeof(GeneroInfo));
-      if (!info) {
-        list_clean(generos_list);
-        free(generos_list);
-        return;
+    if (is_valid) { // Si el género es válido...
+      GeneroInfo *info = malloc(sizeof(GeneroInfo)); // ...reservaremos memoria para guardar su información.
+      if (!info) { // Si no podemos reservar memoria...
+        list_clean(generos_list); // ...limpiaremos la lista de géneros.
+        free(generos_list); // ...liberaremos la memoria de la lista.
+        return; // ...y terminaremos la función.
       }
-      info->genero = genero;
-      info->num_canciones = list_size(pair->value);
-      list_pushBack(generos_list, info);
-      size_t len = strlen(info->genero) + 4 + (info->num_canciones / 10 + 1);
-      if (len > max_len) max_len = len;
-      num_generos++;
+      info->genero = genero; // Guardaremos el nombre del género.
+      info->num_canciones = list_size(pair->value); // Contaremos cuántas canciones tiene este género.
+      list_pushBack(generos_list, info); // Agregaremos la información del género a la lista.
+      size_t len = strlen(info->genero) + 4 + (info->num_canciones / 10 + 1); // Calcularemos la longitud del texto para mostrar el género.
+      if (len > max_len) max_len = len; // Actualizaremos la longitud máxima si es necesario.
+      num_generos++; // Incrementaremos el conteo de géneros válidos.
     }
-    pair = map_next(canciones_by_genero);
+    pair = map_next(canciones_by_genero); // Pasaremos al siguiente género.
   }
 
-  if (num_generos == 0) {
-    printf("No hay géneros válidos disponibles.\n");
-    list_clean(generos_list);
-    free(generos_list);
-    return;
+  if (num_generos == 0) { // Si no encontramos géneros válidos...
+    printf("No hay géneros válidos disponibles.\n"); // ...informaremos al usuario.
+    list_clean(generos_list); // ...limpiaremos la lista de géneros.
+    free(generos_list); // ...liberaremos la memoria de la lista.
+    return; // ...y terminaremos la función.
   }
 
-  printf("\nGéneros disponibles:\n");
-  int cols = 4, col_width = max_len + 2 > 12 ? max_len + 2 : 12;
-  int rows = (num_generos + cols - 1) / cols;
-  GeneroInfo *info = list_first(generos_list);
-  int index = 0;
-  for (int i = 0; i < rows && index < num_generos; i++) {
-    for (int j = 0; j < cols && index < num_generos; j++) {
-      printf(" %-s (%d)", info->genero, info->num_canciones);
-      int len = strlen(info->genero) + (info->num_canciones / 10 + 1) + 4;
-      for (int k = len; k < col_width; k++) printf(" ");
-      info = list_next(generos_list);
-      index++;
+  printf("\nGéneros disponibles:\n"); // Mostraremos un encabezado para los géneros.
+  int cols = 4, col_width = max_len + 2 > 12 ? max_len + 2 : 12; // Definiremos el número de columnas y su ancho para mostrar los géneros.
+  int rows = (num_generos + cols - 1) / cols; // Calcularemos cuántas filas necesitamos.
+  GeneroInfo *info = list_first(generos_list); // Tomaremos el primer género de la lista para mostrarlo.
+  int index = 0; // Llevaremos un conteo de los géneros mostrados.
+  for (int i = 0; i < rows && index < num_generos; i++) { // Recorreremos las filas para mostrar los géneros.
+    for (int j = 0; j < cols && index < num_generos; j++) { // Recorreremos las columnas para cada fila.
+      printf(" %-s (%d)", info->genero, info->num_canciones); // Mostraremos el género y su número de canciones.
+      int len = strlen(info->genero) + (info->num_canciones / 10 + 1) + 4; // Calcularemos la longitud del texto mostrado.
+      for (int k = len; k < col_width; k++) printf(" "); // Añadiremos espacios para alinear las columnas.
+      info = list_next(generos_list); // Pasaremos al siguiente género.
+      index++; // Incrementaremos el conteo de géneros mostrados.
     }
-    printf("\n");
+    printf("\n"); // Añadiremos un salto de línea después de cada fila.
   }
 
-  char genero_input[100];
-  if (!leer_cadena(genero_input, sizeof(genero_input), "\nIngrese el género a buscar (o 'q' para cancelar): ", 3)) {
-    goto limpiar;
+  char genero_input[100]; // Prepararemos un espacio para el género que ingrese el usuario.
+  if (!leer_cadena(genero_input, sizeof(genero_input), "\nIngrese el género a buscar (o 'q' para cancelar): ", 3)) { // Pediremos al usuario que ingrese un género.
+    goto limpiar; // Si no podemos leer el género, saltaremos a limpiar la memoria.
   }
 
-  MapPair *par;
-  if (!validar_genero(canciones_by_genero, genero_input, &par)) {
-    goto limpiar;
+  MapPair *par; // Prepararemos un espacio para guardar el par del mapa encontrado.
+  if (!validar_genero(canciones_by_genero, genero_input, &par)) { // Verificaremos si el género es válido y existe.
+    goto limpiar; // Si no es válido, saltaremos a limpiar la memoria.
   }
 
-  char letra_input;
-  if (!leer_caracter(&letra_input, "Ingrese la letra inicial (A-Z, o 'q' para cancelar): ", 3)) {
-    goto limpiar;
+  char letra_input; // Guardaremos la letra inicial que el usuario ingrese.
+  if (!leer_caracter(&letra_input, "Ingrese la letra inicial (A-Z, o 'q' para cancelar): ", 3)) { // Pediremos al usuario que ingrese una letra.
+    goto limpiar; // Si no podemos leer la letra, saltaremos a limpiar la memoria.
   }
 
-  List *filtradas = filtrar_canciones_por_letra(par->value, letra_input);
-  int count = list_size(filtradas);
-  if (count == 0) {
-    printf("\nNo se encontraron canciones que comiencen con '%c' en el género '%s'.\n", letra_input, genero_input);
-    list_clean(filtradas);
-    free(filtradas);
-    goto limpiar;
+  List *filtradas = filtrar_canciones_por_letra(par->value, letra_input); // Filtraremos las canciones del género que comiencen con la letra dada.
+  int count = list_size(filtradas); // Contaremos cuántas canciones filtramos.
+  if (count == 0) { // Si no encontramos canciones...
+    printf("\nNo se encontraron canciones que comiencen con '%c' en el género '%s'.\n", letra_input, genero_input); // ...informaremos al usuario.
+    list_clean(filtradas); // ...limpiaremos la lista filtrada.
+    free(filtradas); // ...liberaremos la memoria de la lista.
+    goto limpiar; // ...y saltaremos a limpiar la memoria.
   }
 
-  printf("\nCanciones del género '%s' que comienzan con '%c':\n", genero_input, letra_input);
-  int songs_per_row = 4, current = 0;
-  Song *cancion = list_first(filtradas);
-  while (cancion) {
-    printf(" %-s (ID: %d)", cancion->title, cancion->id);
-    current++;
-    if (current % songs_per_row == 0) printf("\n");
-    else printf(" |");
-    cancion = list_next(filtradas);
+  printf("\nCanciones del género '%s' que comienzan con '%c':\n", genero_input, letra_input); // Mostraremos un encabezado con el género y la letra.
+  int songs_per_row = 4, current = 0; // Definiremos cuántas canciones mostraremos por fila y llevaremos un conteo.
+  Song *cancion = list_first(filtradas); // Tomaremos la primera canción filtrada para mostrarla.
+  while (cancion) { // Mientras haya canciones por mostrar, continuaremos.
+    printf(" %-s (ID: %d)", cancion->title, cancion->id); // Mostraremos el título y el ID de la canción.
+    current++; // Incrementaremos el conteo de canciones mostradas.
+    if (current % songs_per_row == 0) printf("\n"); // Si completamos una fila, añadiremos un salto de línea.
+    else printf(" |"); // Si no, separaremos las canciones con una barra.
+    cancion = list_next(filtradas); // Pasaremos a la siguiente canción.
   }
-  if (current % songs_per_row != 0) printf("\n");
+  if (current % songs_per_row != 0) printf("\n"); // Añadiremos un salto de línea si no terminamos en una fila completa.
 
-  char archivo_nombre[100];
-  snprintf(archivo_nombre, sizeof(archivo_nombre), "%c_canciones.txt", letra_input);
-  guardar_canciones_filtradas(filtradas, genero_input, letra_input, archivo_nombre);
+  char archivo_nombre[100]; // Prepararemos un espacio para el nombre del archivo donde guardaremos las canciones.
+  snprintf(archivo_nombre, sizeof(archivo_nombre), "%c_canciones.txt", letra_input); // Crearemos el nombre del archivo usando la letra inicial.
+  guardar_canciones_filtradas(filtradas, genero_input, letra_input, archivo_nombre); // Guardaremos las canciones filtradas en el archivo.
 
-  list_clean(filtradas);
-  free(filtradas);
+  list_clean(filtradas); // Limpiaremos la lista filtrada.
+  free(filtradas); // Liberaremos la memoria de la lista filtrada.
 
 limpiar:
-  info = list_first(generos_list);
-  while (info) {
-    free(info);
-    info = list_next(generos_list);
+  info = list_first(generos_list); // Tomaremos el primer género de la lista para empezar a limpiar.
+  while (info) { // Mientras haya géneros por limpiar, continuaremos.
+    free(info); // Liberaremos la memoria de la información del género.
+    info = list_next(generos_list); // Pasaremos al siguiente género.
   }
-  list_clean(generos_list);
-  free(generos_list);
+  list_clean(generos_list); // Limpiaremos la lista de géneros.
+  free(generos_list); // Liberaremos la memoria de la lista de géneros.
 }
 
-// Aquí crearemos una función que permite al usuario crear una nueva lista de reproducción. Pedirá un nombre y verificará que no exista antes, asegurando que la lista se cree correctamente.
+// En esta función, permitiremos al usuario crear una nueva lista de reproducción. Pediremos un nombre y verificaremos que no exista antes, asegurándonos de que la lista se cree correctamente.
+
 void crear_lista_reproduccion(Map *playlists) {
-  char nombre_lista[100];
-  if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "Ingrese el nombre de la nueva lista de reproducción (o 'q' para cancelar): ", 3)) {
-    return;
+  char nombre_lista[100]; // Prepararemos un espacio para el nombre de la lista que ingrese el usuario.
+  if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "Ingrese el nombre de la nueva lista de reproducción (o 'q' para cancelar): ", 3)) { // Pediremos el nombre de la lista.
+    return; // Si no podemos leer el nombre, terminaremos la función.
   }
 
-  MapPair *pair = map_search(playlists, nombre_lista);
-  if (pair) {
-    printf("Error: Ya existe una lista de reproducción con el nombre '%s'.\n", nombre_lista);
-    return;
+  MapPair *pair = map_search(playlists, nombre_lista); // Buscaremos si ya existe una lista con ese nombre.
+  if (pair) { // Si la lista ya existe...
+    printf("Error: Ya existe una lista de reproducción con el nombre '%s'.\n", nombre_lista); // ...informaremos al usuario.
+    return; // ...y terminaremos la función.
   }
 
-  List *lista = list_create();
-  if (!lista) {
-    printf("Error: No se pudo crear la lista de reproducción.\n");
-    return;
+  List *lista = list_create(); // Crearemos una nueva lista para la lista de reproducción.
+  if (!lista) { // Si no podemos crear la lista...
+    printf("Error: No se pudo crear la lista de reproducción.\n"); // ...mostraremos un mensaje de error.
+    return; // ...y terminaremos la función.
   }
 
-  char *nombre_key = strdup(nombre_lista);
-  if (!nombre_key) {
-    list_clean(lista);
-    free(lista);
-    return;
+  char *nombre_key = strdup(nombre_lista); // Haremos una copia del nombre para usarla como clave en el mapa.
+  if (!nombre_key) { // Si no podemos crear la copia...
+    list_clean(lista); // ...limpiaremos la lista creada.
+    free(lista); // ...liberaremos la memoria de la lista.
+    return; // ...y terminaremos la función.
   }
-  map_insert(playlists, nombre_key, lista);
-  printf("Lista de reproducción '%s' creada exitosamente.\n", nombre_lista);
+  map_insert(playlists, nombre_key, lista); // Insertaremos la nueva lista en el mapa de listas de reproducción.
+  printf("Lista de reproducción '%s' creada exitosamente.\n", nombre_lista); // Informaremos al usuario que la lista se creó correctamente.
 }
 
-// Ahora implementaremos una función que muestra todas las listas de reproducción disponibles. Nos ayudará a informar al usuario qué listas existen antes de realizar acciones como agregar canciones o guardarlas.
+// En esta función, mostraremos todas las listas de reproducción disponibles. Informaremos al usuario qué listas existen para que puedan elegir una.
+
 void listar_playlists(Map *playlists) {
-  printf("\nListas de reproducción disponibles:\n");
-  MapPair *pair = map_first(playlists);
-  if (!pair) {
-    printf("No hay listas de reproducción creadas.\n");
-    return;
+  printf("\nListas de reproducción disponibles:\n"); // Mostraremos un encabezado para las listas.
+  MapPair *pair = map_first(playlists); // Tomaremos la primera lista del mapa para empezar a mostrarla.
+  if (!pair) { // Si no hay listas...
+    printf("No hay listas de reproducción creadas.\n"); // ...informaremos al usuario.
+    return; // ...y terminaremos la función.
   }
-  int i = 1;
-  while (pair) {
-    printf("%d. %s\n", i++, (char *)pair->key);
-    pair = map_next(playlists);
+  int i = 1; // Llevaremos un conteo para numerar las listas.
+  while (pair) { // Mientras haya listas por mostrar, continuaremos.
+    printf("%d. %s\n", i++, (char *)pair->key); // Mostraremos el número y el nombre de la lista.
+    pair = map_next(playlists); // Pasaremos a la siguiente lista.
   }
 }
 
-// Aquí vamos a crear una función que permite agregar canciones a una lista de reproducción existente. Pedirá el nombre de la lista y los IDs de las canciones, validando cada entrada para evitar errores.
+// En esta función, permitiremos al usuario agregar canciones a una lista de reproducción existente. Pediremos el nombre de la lista y los IDs de las canciones, validando cada entrada.
+
 void agregar_cancion_a_lista(Map *canciones_by_id, Map *playlists) {
-  listar_playlists(playlists);
-  char nombre_lista[100];
-  if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "\nIngrese el nombre de la lista de reproducción (o 'q' para cancelar): ", 3)) {
-    return;
+  listar_playlists(playlists); // Mostraremos las listas de reproducción disponibles.
+  char nombre_lista[100]; // Prepararemos un espacio para el nombre de la lista que ingrese el usuario.
+  if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "\nIngrese el nombre de la lista de reproducción (o 'q' para cancelar): ", 3)) { // Pediremos el nombre de la lista.
+    return; // Si no podemos leer el nombre, terminaremos la función.
   }
 
-  MapPair *pair = map_search(playlists, nombre_lista);
-  if (!pair) {
-    printf("Error: No existe una lista de reproducción con el nombre '%s'.\n", nombre_lista);
-    return;
+  MapPair *pair = map_search(playlists, nombre_lista); // Buscaremos la lista en el mapa.
+  if (!pair) { // Si la lista no existe...
+    printf("Error: No existe una lista de reproducción con el nombre '%s'.\n", nombre_lista); // ...informaremos al usuario.
+    return; // ...y terminaremos la función.
   }
-  List *lista = pair->value;
+  List *lista = pair->value; // Obtendremos la lista de reproducción encontrada.
 
-  char id_cancion[100];
-  char continuar;
-  do {
-    if (!leer_cadena(id_cancion, sizeof(id_cancion), "\nIngrese el ID de la canción (o 'q' para cancelar): ", 3)) {
-      return;
+  char id_cancion[100]; // Prepararemos un espacio para el ID de la canción que ingrese el usuario.
+  char continuar; // Guardaremos la respuesta del usuario sobre si quiere seguir agregando canciones.
+  do { // Repetiremos el proceso mientras el usuario quiera continuar.
+    if (!leer_cadena(id_cancion, sizeof(id_cancion), "\nIngrese el ID de la canción (o 'q' para cancelar): ", 3)) { // Pediremos el ID de la canción.
+      return; // Si no podemos leer el ID, terminaremos la función.
     }
 
-    if (!es_numero_valido(id_cancion)) {
-      printf("Error: ID de canción inválido.\n");
-      printf("¿Desea intentarlo de nuevo? (s/n): ");
-      scanf(" %c", &continuar);
-      limpiar_buffer();
-      if (continuar != 's' && continuar != 'S') return;
-      continue;
+    if (!es_numero_valido(id_cancion)) { // Si el ID no es un número válido...
+      printf("Error: ID de canción inválido.\n"); // ...mostraremos un mensaje de error.
+      printf("¿Desea intentarlo de nuevo? (s/n): "); // ...preguntaremos si quiere intentar de nuevo.
+      scanf(" %c", &continuar); // Leeremos la respuesta.
+      limpiar_buffer(); // Limpiaremos el buffer de entrada.
+      if (continuar != 's' && continuar != 'S') return; // Si no quiere continuar, terminaremos.
+      continue; // Si quiere intentar, volveremos al inicio del bucle.
     }
 
-    int id = atoi(id_cancion);
-    MapPair *song_pair = map_search(canciones_by_id, &id);
-    if (!song_pair) {
-      printf("Error: No se encontró una canción con el ID '%s'.\n", id_cancion);
-      printf("¿Desea intentarlo de nuevo? (s/n): ");
-      scanf(" %c", &continuar);
-      limpiar_buffer();
-      if (continuar != 's' && continuar != 'S') return;
-      continue;
+    int id = atoi(id_cancion); // Convertiremos el ID a un número entero.
+    MapPair *song_pair = map_search(canciones_by_id, &id); // Buscaremos la canción en el mapa por ID.
+    if (!song_pair) { // Si no encontramos la canción...
+      printf("Error: No se encontró una canción con el ID '%s'.\n", id_cancion); // ...informaremos al usuario.
+      printf("¿Desea intentarlo de nuevo? (s/n): "); // ...preguntaremos si quiere intentar de nuevo.
+      scanf(" %c", &continuar); // Leeremos la respuesta.
+      limpiar_buffer(); // Limpiaremos el buffer de entrada.
+      if (continuar != 's' && continuar != 'S') return; // Si no quiere continuar, terminaremos.
+      continue; // Si quiere intentar, volveremos al inicio del bucle.
     }
 
-    Song *cancion = song_pair->value;
-    list_pushBack(lista, cancion);
-    printf("Canción '%s' agregada a la lista '%s'.\n", cancion->title, nombre_lista);
+    Song *cancion = song_pair->value; // Obtendremos la canción encontrada.
+    list_pushBack(lista, cancion); // Agregaremos la canción a la lista de reproducción.
+    printf("Canción '%s' agregada a la lista '%s'.\n", cancion->title, nombre_lista); // Informaremos que la canción se agregó.
 
-    printf("¿Desea agregar otra canción a la lista '%s'? (s/n): ", nombre_lista);
-    scanf(" %c", &continuar);
-    limpiar_buffer();
-  } while (continuar == 's' || continuar == 'S');
+    printf("¿Desea agregar otra canción a la lista '%s'? (s/n): ", nombre_lista); // Preguntaremos si quiere agregar otra canción.
+    scanf(" %c", &continuar); // Leeremos la respuesta.
+    limpiar_buffer(); // Limpiaremos el buffer de entrada.
+  } while (continuar == 's' || continuar == 'S'); // Repetiremos si el usuario quiere continuar.
 }
 
-// Ahora crearemos una función que muestra las canciones de una lista de reproducción específica. Pedirá el nombre de la lista y mostrará los detalles de cada canción, como título, ID, tempo y género.
+// En esta función, mostraremos las canciones de una lista de reproducción específica. Pediremos el nombre de la lista y listaremos los detalles de cada canción, como título, ID, tempo y género.
+
 void mostrar_lista_reproduccion(Map *playlists) {
-  listar_playlists(playlists);
-  char nombre_lista[100];
-  if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "\nIngrese el nombre de la lista de reproducción (o 'q' para cancelar): ", 3)) {
-    return;
+  listar_playlists(playlists); // Mostraremos todas las listas de reproducción disponibles.
+  char nombre_lista[100]; // Prepararemos un espacio para el nombre de la lista que ingrese el usuario.
+  if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "\nIngrese el nombre de la lista de reproducción (o 'q' para cancelar): ", 3)) { // Pediremos el nombre de la lista.
+    return; // Si no podemos leer el nombre, terminaremos la función.
   }
 
-  MapPair *pair = map_search(playlists, nombre_lista);
-  if (!pair) {
-    printf("Error: No existe una lista de reproducción con el nombre '%s'.\n", nombre_lista);
-    return;
+  MapPair *pair = map_search(playlists, nombre_lista); // Buscaremos la lista en el mapa de listas de reproducción.
+  if (!pair) { // Si no encontramos la lista...
+    printf("Error: No existe una lista de reproducción con el nombre '%s'.\n", nombre_lista); // ...informaremos al usuario.
+    return; // ...y terminaremos la función.
   }
 
-  List *lista = pair->value;
-  if (!list_first(lista)) {
-    printf("La lista de reproducción '%s' está vacía.\n", nombre_lista);
-    return;
+  List *lista = pair->value; // Obtendremos la lista de reproducción encontrada.
+  if (!list_first(lista)) { // Si la lista está vacía...
+    printf("La lista de reproducción '%s' está vacía.\n", nombre_lista); // ...informaremos al usuario.
+    return; // ...y terminaremos la función.
   }
 
-  printf("\nCanciones en la lista de reproducción '%s':\n", nombre_lista);
-  int i = 1;
-  Song *cancion = list_first(lista);
-  while (cancion) {
-    printf("%d. %s (ID: %d, Tempo: %.2f, Género: %s)\n", 
-          i++, cancion->title, cancion->id, cancion->tempo, cancion->genre);
-    cancion = list_next(lista);
+  printf("\nCanciones en la lista de reproducción '%s':\n", nombre_lista); // Mostraremos un encabezado con el nombre de la lista.
+  int i = 1; // Llevaremos un conteo para numerar las canciones.
+  Song *cancion = list_first(lista); // Tomaremos la primera canción de la lista para empezar a mostrarla.
+  while (cancion) { // Mientras haya canciones por mostrar, continuaremos.
+    printf("%d. %s (ID: %d, Tempo: %.2f, Género: %s)\n", i++, cancion->title, cancion->id, cancion->tempo, cancion->genre); // Mostraremos los detalles de la canción.
+    cancion = list_next(lista); // Pasaremos a la siguiente canción.
   }
 }
 
-// Aquí implementaremos una función que guarda una lista de reproducción en un archivo CSV. Nos permitirá exportar las canciones de una lista con sus detalles, como ID, título, tempo y género.
+// En esta función, guardaremos una lista de reproducción en un archivo CSV. Exportaremos las canciones con sus detalles, como ID, título, tempo y género.
+
 void guardar_lista_reproduccion(Map *playlists) {
-  char nombre_lista[100];
-  if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "Ingrese el nombre de la lista de reproducción a guardar (o 'q' para cancelar): ", 3)) {
-    return;
+  char nombre_lista[100]; // Prepararemos un espacio para el nombre de la lista que ingrese el usuario.
+  if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "Ingrese el nombre de la lista de reproducción a guardar (o 'q' para cancelar): ", 3)) { // Pediremos el nombre de la lista.
+    return; // Si no podemos leer el nombre, terminaremos la función.
   }
 
-  MapPair *pair = map_search(playlists, nombre_lista);
-  if (!pair) {
-    printf("Error: No existe una lista de reproducción con el nombre '%s'.\n", nombre_lista);
-    return;
+  MapPair *pair = map_search(playlists, nombre_lista); // Buscaremos la lista en el mapa de listas de reproducción.
+  if (!pair) { // Si no encontramos la lista...
+    printf("Error: No existe una lista de reproducción con el nombre '%s'.\n", nombre_lista); // ...informaremos al usuario.
+    return; // ...y terminaremos la función.
   }
 
-  List *lista = pair->value;
-  if (!list_first(lista)) {
-    printf("La lista de reproducción '%s' está vacía.\n", nombre_lista);
-    return;
+  List *lista = pair->value; // Obtendremos la lista de reproducción encontrada.
+  if (!list_first(lista)) { // Si la lista está vacía...
+    printf("La lista de reproducción '%s' está vacía.\n", nombre_lista); // ...informaremos al usuario.
+    return; // ...y terminaremos la función.
   }
 
-  char nombre_archivo[150];
-  snprintf(nombre_archivo, sizeof(nombre_archivo), "%s.csv", nombre_lista);
-  FILE *archivo = fopen(nombre_archivo, "w");
-  if (!archivo) {
-    perror("Error al abrir el archivo para guardar");
-    return;
+  char nombre_archivo[150]; // Prepararemos un espacio para el nombre del archivo CSV.
+  snprintf(nombre_archivo, sizeof(nombre_archivo), "%s.csv", nombre_lista); // Crearemos el nombre del archivo usando el nombre de la lista.
+  FILE *archivo = fopen(nombre_archivo, "w"); // Abriremos el archivo en modo escritura.
+  if (!archivo) { // Si no podemos abrir el archivo...
+    perror("Error al abrir el archivo para guardar"); // ...mostraremos un mensaje de error.
+    return; // ...y terminaremos la función.
   }
 
-  fprintf(archivo, "ID,Title,Tempo,Género\n");
-  Song *cancion = list_first(lista);
-  while (cancion) {
-    fprintf(archivo, "%d,%s,%.2f,%s\n", cancion->id, cancion->title, cancion->tempo, cancion->genre);
-    cancion = list_next(lista);
+  fprintf(archivo, "ID,Title,Tempo,Género\n"); // Escribiremos un encabezado en el archivo CSV.
+  Song *cancion = list_first(lista); // Tomaremos la primera canción de la lista para empezar a guardarla.
+  while (cancion) { // Mientras haya canciones por guardar, continuaremos.
+    fprintf(archivo, "%d,%s,%.2f,%s\n", cancion->id, cancion->title, cancion->tempo, cancion->genre); // Escribiremos los detalles de la canción en el archivo.
+    cancion = list_next(lista); // Pasaremos a la siguiente canción.
   }
 
-  fclose(archivo);
-  printf("Lista de reproducción '%s' guardada en el archivo '%s'.\n", nombre_lista, nombre_archivo);
+  fclose(archivo); // Cerraremos el archivo después de escribir todo.
+  printf("Lista de reproducción '%s' guardada en el archivo '%s'.\n", nombre_lista, nombre_archivo); // Informaremos al usuario que la lista se guardó.
 }
 
-// Ahora vamos a crear una función que genera datos aleatorios de canciones para pruebas. Nos permitirá simular un conjunto de canciones con artistas, géneros y tempos variados, útil para depurar el programa.
+// En esta función, generaremos canciones aleatorias para pruebas. Crearemos canciones con datos variados y las agregaremos a los mapas, con la opción de incluirlas en una lista de reproducción.
+
 void testear_datos_aleatorios(Map *canciones_by_id, Map *canciones_by_genero, Map *canciones_by_artista, Map **playlists) {
-  srand(time(NULL));
-  char *titulos[] = {"Song A", "Song B", "Song C", "Song D", "Song E"};
-  char *artistas[] = {"Artist 1", "50 Cent", "*NSYNC", "Artist 4"};
-  char *albumes[] = {"Album X", "Album Y", "Album Z"};
-  char *generos[] = {"Pop", "Rock", "Jazz", "Electronic", "Hip Hop"};
-  int num_titulos = 5, num_artistas = 4, num_albumes = 3, num_generos = 5;
+  srand(time(NULL)); // Inicializaremos el generador de números aleatorios.
+  char *titulos[] = {"Song A", "Song B", "Song C", "Song D", "Song E"}; // Definiremos una lista de títulos base.
+  char *artistas[] = {"Artist 1", "50 Cent", "*NSYNC", "Artist 4"}; // Definiremos una lista de artistas.
+  char *albumes[] = {"Album X", "Album Y", "Album Z"}; // Definiremos una lista de álbumes.
+  char *generos[] = {"Pop", "Rock", "Jazz", "Electronic", "Hip Hop"}; // Definiremos una lista de géneros.
+  int num_titulos = 5, num_artistas = 4, num_albumes = 3, num_generos = 5; // Guardaremos el número de elementos en cada lista.
 
-  int num_canciones;
-  if (!leer_tempo(&num_canciones, "Ingrese el número de canciones aleatorias a generar (o 'q' para cancelar): ", 3)) {
-    return;
+  int num_canciones; // Guardaremos el número de canciones a generar.
+  if (!leer_tempo(&num_canciones, "Ingrese el número de canciones aleatorias a generar (o 'q' para cancelar): ", 3)) { // Pediremos al usuario cuántas canciones generar.
+    return; // Si no podemos leer el número, terminaremos la función.
   }
-  if (num_canciones < 0) {
-    printf("Error: El número de canciones no puede ser negativo.\n");
-    return;
+  if (num_canciones < 0) { // Si el número es negativo...
+    printf("Error: El número de canciones no puede ser negativo.\n"); // ...mostraremos un error.
+    return; // ...y terminaremos la función.
   }
 
-  int base_id = 1000;
-  MapPair *pair = map_first(canciones_by_id);
-  while (pair) {
-    if (*(int *)pair->key >= base_id) {
-      base_id = *(int *)pair->key + 1;
+  int base_id = 1000; // Estableceremos un ID base para las canciones generadas.
+  MapPair *pair = map_first(canciones_by_id); // Tomaremos la primera canción del mapa por ID.
+  while (pair) { // Mientras haya canciones en el mapa, continuaremos.
+    if (*(int *)pair->key >= base_id) { // Si el ID de la canción es mayor o igual al base...
+      base_id = *(int *)pair->key + 1; // ...actualizaremos el base para evitar duplicados.
     }
-    pair = map_next(canciones_by_id);
+    pair = map_next(canciones_by_id); // Pasaremos a la siguiente canción.
   }
 
-  char agregar_lista;
-  char nombre_lista[100] = "";
-  List *lista = NULL;
-  printf("¿Desea agregar las canciones generadas a una lista de reproducción? (s/n): ");
-  scanf(" %c", &agregar_lista);
-  limpiar_buffer();
-  if (agregar_lista == 's' || agregar_lista == 'S') {
-    if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): ", 3)) {
-      return;
+  char agregar_lista; // Guardaremos si el usuario quiere agregar las canciones a una lista.
+  char nombre_lista[100] = ""; // Prepararemos un espacio para el nombre de la lista.
+  List *lista = NULL; // Prepararemos un espacio para la lista de reproducción.
+  printf("¿Desea agregar las canciones generadas a una lista de reproducción? (s/n): "); // Preguntaremos si quiere agregar las canciones a una lista.
+  scanf(" %c", &agregar_lista); // Leeremos la respuesta.
+  limpiar_buffer(); // Limpiaremos el buffer de entrada.
+  if (agregar_lista == 's' || agregar_lista == 'S') { // Si el usuario quiere agregar a una lista...
+    if (!leer_cadena(nombre_lista, sizeof(nombre_lista), "Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): ", 3)) { // ...pediremos el nombre de la lista.
+      return; // Si no podemos leer el nombre, terminaremos la función.
     }
 
-    pair = map_search(*playlists, nombre_lista);
-    if (!pair) {
-      lista = list_create();
-      if (!lista) {
-        printf("Error: No se pudo crear la lista de reproducción.\n");
-        return;
+    pair = map_search(*playlists, nombre_lista); // Buscaremos si la lista ya existe.
+    if (!pair) { // Si la lista no existe...
+      lista = list_create(); // ...crearemos una nueva lista.
+      if (!lista) { // Si no podemos crear la lista...
+        printf("Error: No se pudo crear la lista de reproducción.\n"); // ...mostraremos un error.
+        return; // ...y terminaremos la función.
       }
-      char *nombre_key = strdup(nombre_lista);
-      if (!nombre_key) {
-        list_clean(lista);
-        free(lista);
-        return;
+      char *nombre_key = strdup(nombre_lista); // Haremos una copia del nombre para el mapa.
+      if (!nombre_key) { // Si no podemos crear la copia...
+        list_clean(lista); // ...limpiaremos la lista.
+        free(lista); // ...liberaremos la memoria de la lista.
+        return; // ...y terminaremos la función.
       }
-      map_insert(*playlists, nombre_key, lista);
-      printf("Lista de reproducción '%s' creada.\n", nombre_lista);
-    } else {
-      lista = pair->value;
+      map_insert(*playlists, nombre_key, lista); // Insertaremos la lista en el mapa de listas.
+      printf("Lista de reproducción '%s' creada.\n", nombre_lista); // Informaremos que la lista se creó.
+    } else { // Si la lista ya existe...
+      lista = pair->value; // ...usaremos la lista existente.
     }
   }
 
-  for (int i = 0; i < num_canciones; i++) {
-    Song *song = malloc(sizeof(Song));
-    if (!song) {
-      printf("Error: No se pudo asignar memoria para Song aleatoria %d.\n", i);
-      return;
+  for (int i = 0; i < num_canciones; i++) { // Para cada canción que queremos generar, continuaremos.
+    Song *song = malloc(sizeof(Song)); // Reservaremos memoria para una nueva canción.
+    if (!song) { // Si no podemos reservar memoria...
+      printf("Error: No se pudo asignar memoria para Song aleatoria %d.\n", i); // ...mostraremos un error.
+      return; // ...y terminaremos la función.
     }
 
-    song->id = base_id + i;
-    snprintf(song->title, 100, "%s %d", titulos[rand() % num_titulos], song->id);
-    song->artists = list_create();
-    if (!song->artists) {
-      free(song);
-      return;
+    song->id = base_id + i; // Asignaremos un ID único a la canción.
+    snprintf(song->title, 100, "%s %d", titulos[rand() % num_titulos], song->id); // Crearemos un título combinando un título base y el ID.
+    song->artists = list_create(); // Crearemos una lista para los artistas de la canción.
+    if (!song->artists) { // Si no podemos crear la lista...
+      free(song); // ...liberaremos la memoria de la canción.
+      return; // ...y terminaremos la función.
     }
-    int num_artistas_cancion = (rand() % 2) + 1;
-    for (int j = 0; j < num_artistas_cancion; j++) {
-      char *artista = artistas[rand() % num_artistas];
-      list_pushBack(song->artists, strdup(artista));
+    int num_artistas_cancion = (rand() % 2) + 1; // Decidiremos cuántos artistas tendrá la canción (1 o 2).
+    for (int j = 0; j < num_artistas_cancion; j++) { // Para cada artista, continuaremos.
+      char *artista = artistas[rand() % num_artistas]; // Elegiremos un artista al azar.
+      list_pushBack(song->artists, strdup(artista)); // Agregaremos una copia del nombre del artista a la lista.
     }
-    snprintf(song->album, 100, "%s %d", albumes[rand() % num_albumes], song->id);
-    strcpy(song->genre, generos[rand() % num_generos]);
-    song->tempo = 60.0 + (rand() % 141);
+    snprintf(song->album, 100, "%s %d", albumes[rand() % num_albumes], song->id); // Crearemos un nombre de álbum combinando un álbum base y el ID.
+    strcpy(song->genre, generos[rand() % num_generos]); // Escogeremos un género al azar.
+    song->tempo = 60.0 + (rand() % 141); // Asignaremos un tempo aleatorio entre 60 y 200.
 
-    int *id_key = malloc(sizeof(int));
-    if (!id_key) {
-      list_clean(song->artists);
-      free(song->artists);
-      free(song);
-      return;
+    int *id_key = malloc(sizeof(int)); // Reservaremos memoria para la clave del ID.
+    if (!id_key) { // Si no podemos reservar memoria...
+      list_clean(song->artists); // ...limpiaremos la lista de artistas.
+      free(song->artists); // ...liberaremos la memoria de la lista.
+      free(song); // ...liberaremos la memoria de la canción.
+      return; // ...y terminaremos la función.
     }
-    *id_key = song->id;
-    map_insert(canciones_by_id, id_key, song);
+    *id_key = song->id; // Guardaremos el ID en la clave.
+    map_insert(canciones_by_id, id_key, song); // Insertaremos la canción en el mapa por ID.
 
-    char *genre_key = strdup(song->genre);
-    if (!genre_key) {
-      list_clean(song->artists);
-      free(song->artists);
-      free(song);
-      return;
+    char *genre_key = strdup(song->genre); // Haremos una copia del género para usarla como clave.
+    if (!genre_key) { // Si no podemos crear la copia...
+      list_clean(song->artists); // ...limpiaremos la lista de artistas.
+      free(song->artists); // ...liberaremos la memoria de la lista.
+      free(song); // ...liberaremos la memoria de la canción.
+      return; // ...y terminaremos la función.
     }
-    pair = map_search(canciones_by_genero, genre_key);
-    if (!pair) {
-      List *list = list_create();
-      if (!list) {
-        free(genre_key);
-        list_clean(song->artists);
-        free(song->artists);
-        free(song);
-        return;
+    pair = map_search(canciones_by_genero, genre_key); // Buscaremos el género en el mapa por género.
+    if (!pair) { // Si el género no existe...
+      List *list = list_create(); // ...crearemos una nueva lista para las canciones de este género.
+      if (!list) { // Si no podemos crear la lista...
+        free(genre_key); // ...liberaremos la clave del género.
+        list_clean(song->artists); // ...limpiaremos la lista de artistas.
+        free(song->artists); // ...liberaremos la memoria de la lista.
+        free(song); // ...liberaremos la memoria de la canción.
+        return; // ...y terminaremos la función.
       }
-      list_pushBack(list, song);
-      map_insert(canciones_by_genero, genre_key, list);
-    } else {
-      list_pushBack(pair->value, song);
-      free(genre_key);
+      list_pushBack(list, song); // Agregaremos la canción a la nueva lista.
+      map_insert(canciones_by_genero, genre_key, list); // Insertaremos la lista en el mapa por género.
+    } else { // Si el género ya existe...
+      list_pushBack(pair->value, song); // ...agregaremos la canción a la lista existente.
+      free(genre_key); // ...y liberaremos la copia del género.
     }
 
-    char *artist = list_first(song->artists);
-    while (artist) {
-      MapPair *artist_pair = map_search(canciones_by_artista, artist);
-      if (!artist_pair) {
-        List *list = list_create();
-        if (!list) {
-          list_clean(song->artists);
-          free(song->artists);
-          free(song);
-          return;
+    char *artist = list_first(song->artists); // Tomaremos el primer artista de la canción.
+    while (artist) { // Mientras haya artistas por procesar, continuaremos.
+      MapPair *artist_pair = map_search(canciones_by_artista, artist); // Buscaremos el artista en el mapa por artista.
+      if (!artist_pair) { // Si el artista no existe...
+        List *list = list_create(); // ...crearemos una nueva lista para sus canciones.
+        if (!list) { // Si no podemos crear la lista...
+          list_clean(song->artists); // ...limpiaremos la lista de artistas.
+          free(song->artists); // ...liberaremos la memoria de la lista.
+          free(song); // ...liberaremos la memoria de la canción.
+          return; // ...y terminaremos la función.
         }
-        list_pushBack(list, song);
-        char *artist_key = strdup(artist);
-        if (!artist_key) {
-          list_clean(list);
-          free(list);
-          list_clean(song->artists);
-          free(song->artists);
-          free(song);
-          return;
+        list_pushBack(list, song); // Agregaremos la canción a la nueva lista.
+        char *artist_key = strdup(artist); // Haremos una copia del nombre del artista.
+        if (!artist_key) { // Si no podemos crear la copia...
+          list_clean(list); // ...limpiaremos la lista creada.
+          free(list); // ...liberaremos la memoria de la lista.
+          list_clean(song->artists); // ...limpiaremos la lista de artistas.
+          free(song->artists); // ...liberaremos la memoria de la lista.
+          free(song); // ...liberaremos la memoria de la canción.
+          return; // ...y terminaremos la función.
         }
-        map_insert(canciones_by_artista, artist_key, list);
-      } else {
-        list_pushBack(artist_pair->value, song);
+        map_insert(canciones_by_artista, artist_key, list); // Insertaremos la lista en el mapa por artista.
+      } else { // Si el artista ya existe...
+        list_pushBack(artist_pair->value, song); // ...agregaremos la canción a la lista existente.
       }
-      artist = list_next(song->artists);
+      artist = list_next(song->artists); // Pasaremos al siguiente artista.
     }
 
-    if (agregar_lista == 's' || agregar_lista == 'S') {
-      list_pushBack(lista, song);
+    if (agregar_lista == 's' || agregar_lista == 'S') { // Si el usuario quiso agregar a una lista...
+      list_pushBack(lista, song); // ...agregaremos la canción a la lista de reproducción.
     }
   }
 
-  printf("Se generaron %d canciones aleatorias.\n", num_canciones);
-  if (agregar_lista == 's' || agregar_lista == 'S' && nombre_lista[0] != '\0') {
-    printf("Las canciones fueron agregadas a la lista '%s'.\n", nombre_lista);
+  printf("Se generaron %d canciones aleatorias.\n", num_canciones); // Informaremos cuántas canciones generamos.
+  if (agregar_lista == 's' || agregar_lista == 'S' && nombre_lista[0] != '\0') { // Si se agregaron a una lista...
+    printf("Las canciones fueron agregadas a la lista '%s'.\n", nombre_lista); // ...informaremos al usuario.
   }
 }
 
-// Aquí crearemos una función que libera toda la memoria utilizada por los mapas de canciones, géneros, artistas y listas de reproducción. Nos asegurará que no haya fugas de memoria al cerrar el programa.
+// En esta función, liberaremos toda la memoria usada por los mapas de canciones, géneros, artistas y listas de reproducción. Nos aseguraremos de no dejar fugas de memoria.
+
 void liberar_canciones(Map *canciones_by_id, Map *canciones_by_genero, Map *canciones_by_artista, Map *playlists) {
-  MapPair *pair = map_first(canciones_by_id);
-  while (pair) {
-    Song *song = pair->value;
-    char *artist = list_first(song->artists);
-    while (artist) {
-      free(artist);
-      artist = list_next(song->artists);
+  MapPair *pair = map_first(canciones_by_id); // Tomaremos la primera canción del mapa por ID.
+  while (pair) { // Mientras haya canciones por liberar, continuaremos.
+    Song *song = pair->value; // Obtendremos la canción actual.
+    char *artist = list_first(song->artists); // Tomaremos el primer artista de la canción.
+    while (artist) { // Mientras haya artistas por liberar, continuaremos.
+      free(artist); // Liberaremos la memoria del nombre del artista.
+      artist = list_next(song->artists); // Pasaremos al siguiente artista.
     }
-    list_clean(song->artists);
-    free(song->artists);
-    free(song);
-    free(pair->key);
-    pair = map_next(canciones_by_id);
+    list_clean(song->artists); // Limpiaremos la lista de artistas.
+    free(song->artists); // Liberaremos la memoria de la lista de artistas.
+    free(song); // Liberaremos la memoria de la canción.
+    free(pair->key); // Liberaremos la memoria de la clave del ID.
+    pair = map_next(canciones_by_id); // Pasaremos a la siguiente canción.
   }
-  map_clean(canciones_by_id);
-  free(canciones_by_id);
+  map_clean(canciones_by_id); // Limpiaremos el mapa por ID.
+  free(canciones_by_id); // Liberaremos la memoria del mapa.
 
-  pair = map_first(canciones_by_genero);
-  while (pair) {
-    List *list = pair->value;
-    list_clean(list);
-    free(pair->key);
-    free(list);
-    pair = map_next(canciones_by_genero);
+  pair = map_first(canciones_by_genero); // Tomaremos el primer género del mapa por género.
+  while (pair) { // Mientras haya géneros por liberar, continuaremos.
+    List *list = pair->value; // Obtendremos la lista de canciones del género.
+    list_clean(list); // Limpiaremos la lista de canciones.
+    free(pair->key); // Liberaremos la memoria de la clave del género.
+    free(list); // Liberaremos la memoria de la lista.
+    pair = map_next(canciones_by_genero); // Pasaremos al siguiente género.
   }
-  map_clean(canciones_by_genero);
-  free(canciones_by_genero);
+  map_clean(canciones_by_genero); // Limpiaremos el mapa por género.
+  free(canciones_by_genero); // Liberaremos la memoria del mapa.
 
-  pair = map_first(canciones_by_artista);
-  while (pair) {
-    List *list = pair->value;
-    list_clean(list);
-    free(pair->key);
-    free(list);
-    pair = map_next(canciones_by_artista);
+  pair = map_first(canciones_by_artista); // Tomaremos el primer artista del mapa por artista.
+  while (pair) { // Mientras haya artistas por liberar, continuaremos.
+    List *list = pair->value; // Obtendremos la lista de canciones del artista.
+    list_clean(list); // Limpiaremos la lista de canciones.
+    free(pair->key); // Liberaremos la memoria de la clave del artista.
+    free(list); // Liberaremos la memoria de la lista.
+    pair = map_next(canciones_by_artista); // Pasaremos al siguiente artista.
   }
-  map_clean(canciones_by_artista);
-  free(canciones_by_artista);
+  map_clean(canciones_by_artista); // Limpiaremos el mapa por artista.
+  free(canciones_by_artista); // Liberaremos la memoria del mapa.
 
-  pair = map_first(playlists);
-  while (pair) {
-    List *list = pair->value;
-    list_clean(list);
-    free(pair->key);
-    free(list);
-    pair = map_next(playlists);
+  pair = map_first(playlists); // Tomaremos la primera lista del mapa de listas de reproducción.
+  while (pair) { // Mientras haya listas por liberar, continuaremos.
+    List *list = pair->value; // Obtendremos la lista de reproducción.
+    list_clean(list); // Limpiaremos la lista de canciones.
+    free(pair->key); // Liberaremos la memoria de la clave del nombre.
+    free(list); // Liberaremos la memoria de la lista.
+    pair = map_next(playlists); // Pasaremos a la siguiente lista.
   }
-  map_clean(playlists);
-  free(playlists);
+  map_clean(playlists); // Limpiaremos el mapa de listas.
+  free(playlists); // Liberaremos la memoria del mapa.
 }
 
-// Ahora implementaremos la función principal del programa. Nos permitirá mostrar un menú interactivo, procesar las opciones del usuario y coordinar las demás funciones para gestionar las canciones y listas de reproducción.
+// En esta función principal, coordinaremos el programa. Mostraremos un menú interactivo, procesaremos las opciones del usuario y gestionaremos las canciones y listas de reproducción.
+
 int main() {
-  Map *canciones_by_id = map_create(is_equal_int);
-  Map *canciones_by_genero = map_create(is_equal_str);
-  Map *canciones_by_artista = map_create(is_equal_str);
-  Map *playlists = map_create(is_equal_str);
+  Map *canciones_by_id = map_create(is_equal_int); // Crearemos un mapa para canciones por ID.
+  Map *canciones_by_genero = map_create(is_equal_str); // Crearemos un mapa para canciones por género.
+  Map *canciones_by_artista = map_create(is_equal_str); // Crearemos un mapa para canciones por artista.
+  Map *playlists = map_create(is_equal_str); // Crearemos un mapa para listas de reproducción.
 
-  if (!canciones_by_id || !canciones_by_genero || !canciones_by_artista || !playlists) {
-    printf("Error al crear mapas.\n");
-    if (canciones_by_id) { map_clean(canciones_by_id); free(canciones_by_id); }
-    if (canciones_by_genero) { map_clean(canciones_by_genero); free(canciones_by_genero); }
-    if (canciones_by_artista) { map_clean(canciones_by_artista); free(canciones_by_artista); }
-    if (playlists) { map_clean(playlists); free(playlists); }
-    return 1;
+  if (!canciones_by_id || !canciones_by_genero || !canciones_by_artista || !playlists) { // Si no podemos crear alguno de los mapas...
+    printf("Error al crear mapas.\n"); // ...mostraremos un error.
+    if (canciones_by_id) { map_clean(canciones_by_id); free(canciones_by_id); } // Liberaremos el mapa por ID si existe.
+    if (canciones_by_genero) { map_clean(canciones_by_genero); free(canciones_by_genero); } // Liberaremos el mapa por género si existe.
+    if (canciones_by_artista) { map_clean(canciones_by_artista); free(canciones_by_artista); } // Liberaremos el mapa por artista si existe.
+    if (playlists) { map_clean(playlists); free(playlists); } // Liberaremos el mapa de listas si existe.
+    return 1; // Terminaremos el programa con un error.
   }
 
-  leer_canciones(canciones_by_id, canciones_by_genero, canciones_by_artista);
+  leer_canciones(canciones_by_id, canciones_by_genero, canciones_by_artista); // Cargaremos las canciones desde el archivo CSV.
 
-  if (!map_first(canciones_by_id)) {
-    printf("Advertencia: No se cargaron canciones. Algunas opciones pueden no funcionar.\n");
+  if (!map_first(canciones_by_id)) { // Si no se cargaron canciones...
+    printf("Advertencia: No se cargaron canciones. Algunas opciones pueden no funcionar.\n"); // ...advertiremos al usuario.
   }
 
-  int opcion = 0;
-  while (opcion != 9) {
-    printf("\nMenu:\n");
-    printf("1. Buscar por artista\n");
-    printf("2. Buscar por género\n");
-    printf("3. Buscar por tempo\n");
-    printf("4. Crear nueva lista de reproducción\n");
-    printf("5. Agregar canción a lista de reproducción\n");
-    printf("6. Mostrar canciones de una lista de reproducción\n");
-    printf("7. Guardar lista de reproducción\n");
-    printf("8. Testear con datos aleatorios\n");
-    printf("9. Salir\n");
-    if (!leer_numero(&opcion, "Seleccione una opción (1-9, o 'q' para salir): ", 3)) {
-      continue;
+  int opcion = 0; // Guardaremos la opción que elija el usuario.
+  while (opcion != 9) { // Mientras el usuario no elija salir, continuaremos.
+    printf("\nMenu:\n"); // Mostraremos el menú de opciones.
+    printf("1. Buscar por artista\n"); // Opción para buscar por artista.
+    printf("2. Buscar por género\n"); // Opción para buscar por género.
+    printf("3. Buscar por tempo\n"); // Opción para buscar por tempo.
+    printf("4. Crear nueva lista de reproducción\n"); // Opción para crear una lista.
+    printf("5. Agregar canción a lista de reproducción\n"); // Opción para agregar canciones a una lista.
+    printf("6. Mostrar canciones de una lista de reproducción\n"); // Opción para mostrar una lista.
+    printf("7. Guardar lista de reproducción\n"); // Opción para guardar una lista.
+    printf("8. Testear con datos aleatorios\n"); // Opción para generar datos de prueba.
+    printf("9. Salir\n"); // Opción para salir del programa.
+    if (!leer_numero(&opcion, "Seleccione una opción (1-9, o 'q' para salir): ", 3)) { // Pediremos al usuario que elija una opción.
+      continue; // Si no podemos leer la opción, volveremos al inicio del bucle.
     }
-    if (opcion < 1 || opcion > 9) {
-      printf("Error: Seleccione una opción válida (1-9).\n");
-      continue;
+    if (opcion < 1 || opcion > 9) { // Si la opción no es válida...
+      printf("Error: Seleccione una opción válida (1-9).\n"); // ...mostraremos un error.
+      continue; // ...y volveremos al inicio del bucle.
     }
-    switch (opcion) {
-      case 1: buscar_por_artista(canciones_by_artista); break;
-      case 2: buscar_por_genero(canciones_by_genero); break;
-      case 3: buscar_por_tempo(canciones_by_id); break;
-      case 4: crear_lista_reproduccion(playlists); break;
-      case 5: agregar_cancion_a_lista(canciones_by_id, playlists); break;
-      case 6: mostrar_lista_reproduccion(playlists); break;
-      case 7: guardar_lista_reproduccion(playlists); break;
-      case 8: testear_datos_aleatorios(canciones_by_id, canciones_by_genero, canciones_by_artista, &playlists); break;
-      case 9: printf("Saliendo...\n"); break;
+    switch (opcion) { // Según la opción elegida, ejecutaremos una función.
+      case 1: buscar_por_artista(canciones_by_artista); break; // Buscaremos por artista.
+      case 2: buscar_por_genero(canciones_by_genero); break; // Buscaremos por género.
+      case 3: buscar_por_tempo(canciones_by_id); break; // Buscaremos por tempo.
+      case 4: crear_lista_reproduccion(playlists); break; // Crearemos una nueva lista.
+      case 5: agregar_cancion_a_lista(canciones_by_id, playlists); break; // Agregaremos canciones a una lista.
+      case 6: mostrar_lista_reproduccion(playlists); break; // Mostraremos una lista.
+      case 7: guardar_lista_reproduccion(playlists); break; // Guardaremos una lista.
+      case 8: testear_datos_aleatorios(canciones_by_id, canciones_by_genero, canciones_by_artista, &playlists); break; // Generaremos datos aleatorios.
+      case 9: printf("Saliendo...\n"); break; // Informaremos que el programa está terminando.
     }
-    if (opcion != 9) {
-      presioneTeclaParaContinuar();
-      limpiarPantalla();
+    if (opcion != 9) { // Si no estamos saliendo...
+      presioneTeclaParaContinuar(); // ...esperaremos que el usuario presione una tecla.
+      limpiarPantalla(); // ...y limpiaremos la pantalla para la próxima iteración.
     }
   }
 
-  liberar_canciones(canciones_by_id, canciones_by_genero, canciones_by_artista, playlists);
-  return 0;
+  liberar_canciones(canciones_by_id, canciones_by_genero, canciones_by_artista, playlists); // Liberaremos toda la memoria usada por los mapas.
+  return 0; // Terminaremos el programa exitosamente.
 }
