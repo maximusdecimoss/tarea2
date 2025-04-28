@@ -40,19 +40,6 @@ Clona o descarga el proyecto:
 
 Asegúrate de que todos los archivos estén en la carpeta:
 C:\Users\<tu_usuario>\OneDrive\Desktop\tarea2\
-La estructura debe ser:
-tarea2/
-├── TDAs/
-│   ├── tarea2.c
-│   ├── song_dataset_.csv
-│   ├── tdas/
-│   │   ├── list.c
-│   │   ├── list.h
-│   │   ├── map.c
-│   │   ├── map.h
-│   │   ├── extra.c
-│   │   ├── extra.h
-
 
 Instala GCC (si no lo tienes):
 
