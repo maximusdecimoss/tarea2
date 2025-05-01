@@ -154,9 +154,8 @@ Validación: es_cadena_valida, clasificar_tempo, validar_rango_tempo.
 
 Utilidades: limpiar_buffer, mostrar_categorias_tempo, filtrar_y_mostrar_canciones_por_tempo.
 
-El código está modularizado, con funciones específicas para cada tarea, y comentarios en cada linea de codigo que explican su propósito de la forma mas clara 
-posible, sin lengujae muy tecnico, ya que al tratarse de una apliacion que gestionara musica, se espera que los usuarios que haran uso de la misma no esten 
-ilustrados con la jerga utilizada en el ambito informartico, de alli la decision de comentar cada linea del mismo.
+El código está modularizado, con funciones específicas para cada tarea, y comentarios en las lineas mas complejas del codigo, que explican su propósito de la forma mas clara posible, sin lengujae muy tecnico, ya que al tratarse de una apliacion que gestionara musica, se espera que los usuarios que haran uso de la misma no esten 
+ilustrados con la jerga utilizada en el ambito informartico, de alli la decision de comentar las lineas del mismo.
 
 Funcionalidades y Ejemplos de Uso
 
@@ -310,8 +309,8 @@ Permitir la opcion de testeo para todo el codigo.
 Mostrar por pantalla las canciones organizadas por artistas, y estos a su vez organizados por pais de origen.
 Mostrar por pantalla las canciones organizadas por idioma.
 
-Observación: El codigo a lo largo de su implementación cuenta con comentarios en cada linea que serviran para que cualquier 
-persona que desee posiblemente intentar entender el funcionamiento el mismo, se busco hacer uso de nombre 
+Observación: El codigo a lo largo de su implementación cuenta con comentarios en varias de sus linea que serviran para que cualquier 
+persona que desee posiblemente intentar entender el funcionamiento del mismo, se busco hacer uso de nombre 
 de funciones amigables para que este codigo sea accesible a todo aquel que se interese por entener su estructura.
 
 
