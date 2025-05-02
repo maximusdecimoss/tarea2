@@ -185,6 +185,7 @@ Presione una tecla para continuar...
 
 
 2. Buscar por Género
+
 *Descripción: Muestra todos los géneros disponibles en un recuadro, al lado de los mismos la cantidad exacta de canciones dentro de cada genero,
 al ingresar el genero de eleccion pedira adicional una letra inicial ya que las canciones se encuentran organizadas en orden alfabetico para filtrar las
 mismas y al momento de ser mostradas sea una cantidad mas facil de procesar para cualquier usuario, estas tambien estan acompañadas por informacion extra
