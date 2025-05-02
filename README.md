@@ -173,14 +173,14 @@ Ejemplo de Uso:
 *Seleccione una opción: 1
 *Ingrese la letra inicial del artista (A-Z, '#' para Otros, o 'q' para cancelar): B
 *Artistas que comienzan con 'B':
-1. Billie Eilish (3 canciones)
-2. Bruno Mars (5 canciones)
+- Billie Eilish (3 canciones)
+- Bruno Mars (5 canciones)
    
 *Ingrese el nombre del artista (o 'q' para cancelar): Billie Eilish
 
-1. Bad Guy (ID: 123, Género: Pop)
-2. Lovely (ID: 124, Género: Pop)
-3. Everything I Wanted (ID: 125, Género: Pop)
+- Bad Guy (ID: 123, Género: Pop)
+- Lovely (ID: 124, Género: Pop)
+- Everything I Wanted (ID: 125, Género: Pop)
 Presione una tecla para continuar...
 
 
@@ -240,7 +240,7 @@ Las canciones se imprimiran al final con la informarcion respectiva a su clasifi
 *Ejemplo:
 *Seleccione una opción: 5
 *Listas de reproducción disponibles:
-*1. MiLista
+*- MiLista
 *Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): MiLista
 *Ingrese el ID de la canción (o 'q' para cancelar): 123
 *Canción 'Bad Guy' agregada a la lista 'MiLista'.
@@ -258,11 +258,11 @@ con informacion adicional de las mismas (título, ID, tempo, género).
 *Ejemplo:
 *Seleccione una opción: 6
 *Listas de reproducción disponibles:
-*1. MiLista
+*- MiLista
 *Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): MiLista
 *Canciones en la lista de reproducción 'MiLista':
-*1. Bad Guy (ID: 123, Tempo: 135.00, Género: Pop)
-*2. Lovely (ID: 124, Tempo: 75.00, Género: Pop)
+*- Bad Guy (ID: 123, Tempo: 135.00, Género: Pop)
+*- Lovely (ID: 124, Tempo: 75.00, Género: Pop)
 *Presione una tecla para continuar...
 
 
