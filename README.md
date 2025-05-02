@@ -203,6 +203,7 @@ al momento de ser presentadas, para facilitar la experiencia del usuario, por ul
 
 
 3. Buscar por Tempo
+   
 *Descripción: Muestra un cuadro de texto con las categorías de tempo (Lentas <80 BPM, Moderadas 80-120 BPM, Rápidas >120 BPM), pide un rango de tempo y
 muestra canciones en ese rango. Debido a que la cantidad de canciones son muchas, se penso en modificar la funcion, pidiendo un rango de tempo minimo y
 un rango maximo, filtrando de esta forma aun mas la cantidad de datos a mostrar y acercandonos de mejor forma con las exigencias esperadas por el usuario.
@@ -224,6 +225,7 @@ Las canciones se imprimiran al final con la informarcion respectiva a su clasifi
 
 
 4. Crear Nueva Lista de Reproducción
+   
 *Descripción: Crea una lista de reproducción con un nombre único.
 
 *Ejemplo:
@@ -234,6 +236,7 @@ Las canciones se imprimiran al final con la informarcion respectiva a su clasifi
 
 
 5. Agregar Canción a Lista de Reproducción
+   
 *Descripción: Muestra las listas disponibles para mayor practicidad del usuario, pide el nombre de una lista y los IDs de canciones para agregar.Luego de ingresada
 *la cancion se despliega una barra de texto que preguntara si desea ingresar mas canciones en la lista, de ser si debe ingresar un nuevo ID,de ser no redirigira al
 *menu principal.
@@ -253,6 +256,7 @@ Las canciones se imprimiran al final con la informarcion respectiva a su clasifi
 
 
 6. Mostrar Canciones de una Lista de Reproducción
+   
 *Descripción: Mostrara las distintas listas creadas con anticipacion, seleccionada la lista en cuestion mostrara las canciones de una esta
 con informacion adicional de las mismas (título, ID, tempo, género).
 
@@ -268,6 +272,7 @@ con informacion adicional de las mismas (título, ID, tempo, género).
 
 
 7. Guardar Lista de Reproducción
+   
 *Descripción: Guarda una lista de reproducción en un archivo CSV con columnas ID, título, tempo y género. Esta opcion se agrego de forma adicional, con la finalidad de
 almacenar en el tiempo los datos de las listas creadas por el usuario por si en un futuro desea hacer uso de la informacion de las mismas.
 
@@ -284,6 +289,7 @@ almacenar en el tiempo los datos de las listas creadas por el usuario por si en 
 
 
 *8. Testear con Datos Aleatorios
+
 *Descripción: Genera canciones aleatorias con títulos, artistas, géneros y tempos, y opcionalmente las agrega a una lista de reproducción. Esta funcion se creo con la
 intencion de hacer testeo de las opciones 5,6,7 que manejan directamente las listas de reproduccion, esto con la finalidad de agilizar los procesos de testeo y no tener
 que ingresar dato a dato para la creacion de listas de reproduccion.
@@ -300,6 +306,7 @@ Lista de reproducción 'TestLista' creada.
 
 
 9. Salir
+    
 *Descripción: Cierra el programa y libera toda la memoria.
 
 *Ejemplo:
