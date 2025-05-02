@@ -116,43 +116,43 @@ Mapas:
 
 Funciones Principales:
 
-*Función:leer_canciones
-*Descripción:Carga canciones desde el CSV y las organiza en mapas.
+* Función:leer_canciones
+* Descripción:Carga canciones desde el CSV y las organiza en mapas.
 
-*Función:buscar_por_artista
-*DescripciónBusca canciones por letra inicial del artista y nombre.
+* Función:buscar_por_artista
+* DescripciónBusca canciones por letra inicial del artista y nombre.
 
-Función:buscar_por_genero
-DescripciónBusca canciones por género y letra inicial del título, guarda resultados en un archivo.
+* Función:buscar_por_genero
+* DescripciónBusca canciones por género y letra inicial del título, guarda resultados en un archivo.
 
-*Función:buscar_por_tempo
-*DescripciónBusca canciones en un rango de tempo (mínimo y máximo).
+* Función:buscar_por_tempo
+* DescripciónBusca canciones en un rango de tempo (mínimo y máximo).
 
-*Función:crear_lista_reproduccion
-*DescripciónCrea una nueva lista de reproducción con un nombre único.
+* Función:crear_lista_reproduccion
+* DescripciónCrea una nueva lista de reproducción con un nombre único.
 
-*Función:agregar_cancion_a_lista
-*DescripciónAgrega canciones por ID a una lista existente.
+* Función:agregar_cancion_a_lista
+* DescripciónAgrega canciones por ID a una lista existente.
 
-*Función:mostrar_lista_reproduccion
-*DescripciónMuestra las canciones de una lista con detalles.
+* Función:mostrar_lista_reproduccion
+* DescripciónMuestra las canciones de una lista con detalles.
 
-*Función:guardar_lista_reproduccion
-*DescripciónGuarda una lista en un archivo CSV.
+* Función:guardar_lista_reproduccion
+* DescripciónGuarda una lista en un archivo CSV.
 
-*Función:testear_datos_aleatorios
-*DescripciónGenera canciones aleatorias para pruebas.
+* Función:testear_datos_aleatorios
+* DescripciónGenera canciones aleatorias para pruebas.
 
-*Función:liberar_canciones
-*DescripciónLibera la memoria de todos los mapas.
+* Función:liberar_canciones
+* DescripciónLibera la memoria de todos los mapas.
 
 Funciones Auxiliares
 
-*Entrada: leer_cadena, leer_numero, leer_caracter, leer_tempo, es_numero_valido.
+* Entrada: leer_cadena, leer_numero, leer_caracter, leer_tempo, es_numero_valido.
 
-*Validación: es_cadena_valida, clasificar_tempo, validar_rango_tempo.
+* Validación: es_cadena_valida, clasificar_tempo, validar_rango_tempo.
 
-*Utilidades: limpiar_buffer, mostrar_categorias_tempo, filtrar_y_mostrar_canciones_por_tempo.
+* Utilidades: limpiar_buffer, mostrar_categorias_tempo, filtrar_y_mostrar_canciones_por_tempo.
 
 El código está modularizado, con funciones específicas para cada tarea, y comentarios en las lineas mas complejas del codigo, que explican su propósito de la forma mas clara posible, sin lengujae muy tecnico, ya que al tratarse de una apliacion que gestionara musica, se espera que los usuarios que haran uso de la misma no esten 
 ilustrados con la jerga utilizada en el ambito informartico, de alli la decision de comentar las lineas del mismo.
@@ -168,20 +168,20 @@ o letras que no estan dentro del alfabeto castellano, muestra una lista de artis
 se incluyo el dato de las canciones existentes dentro del archivo para ese artista, de manera que para el usuario sea mas amigable la experiencia de buscar canciones.
 Al momento de imprimirse la cancion ,esta ademas tendra informacion adicional como su ID y Genero para retroalimentar al usuario.
 
-Ejemplo de Uso:
+* Ejemplo de Uso:
 
-*Seleccione una opción: 1
-*Ingrese la letra inicial del artista (A-Z, '#' para Otros, o 'q' para cancelar): B
-*Artistas que comienzan con 'B':
-- Billie Eilish (3 canciones)
+* Seleccione una opción: 1
+* Ingrese la letra inicial del artista (A-Z, '#' para Otros, o 'q' para cancelar): B
+* Artistas que comienzan con 'B':
+* Billie Eilish (3 canciones)
 - Bruno Mars (5 canciones)
    
-*Ingrese el nombre del artista (o 'q' para cancelar): Billie Eilish
+* Ingrese el nombre del artista (o 'q' para cancelar): Billie Eilish
 
 - Bad Guy (ID: 123, Género: Pop)
 - Lovely (ID: 124, Género: Pop)
 - Everything I Wanted (ID: 125, Género: Pop)
-Presione una tecla para continuar...
+- Presione una tecla para continuar...
 
 
 2. Buscar por Género
@@ -191,7 +191,7 @@ al ingresar el genero de eleccion pedira adicional una letra inicial ya que las 
 mismas y al momento de ser mostradas sea una cantidad mas facil de procesar para cualquier usuario, estas tambien estan acompañadas por informacion extra
 al momento de ser presentadas, para facilitar la experiencia del usuario, por ultimo guarda los resultados en un archivo de texto.
 
-*Ejemplo:
+* Ejemplo:
 
 - Seleccione una opción: 2
 - Géneros disponibles:
@@ -211,6 +211,7 @@ un rango maximo, filtrando de esta forma aun mas la cantidad de datos a mostrar 
 Las canciones se imprimiran al final con la informarcion respectiva a su clasificacion por tempo.
 
 * Ejemplo:
+  
 - Seleccione una opción: 3
 - Rangos de tempo disponibles:
 - Lentas (Tempo menos de 80 BPM)
@@ -230,7 +231,7 @@ Las canciones se imprimiran al final con la informarcion respectiva a su clasifi
    
 *Descripción: Crea una lista de reproducción con un nombre único.
 
-*Ejemplo:
+* Ejemplo:
 
 - Seleccione una opción: 4
 - Ingrese el nombre de la nueva lista de reproducción (o 'q' para cancelar): MiLista
