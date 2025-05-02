@@ -116,11 +116,11 @@ Mapas:
 
 Funciones Principales:
 
-*.Función:leer_canciones
-*.Descripción:Carga canciones desde el CSV y las organiza en mapas.
+*Función:leer_canciones
+*Descripción:Carga canciones desde el CSV y las organiza en mapas.
 
-*.Función:buscar_por_artista
-*.DescripciónBusca canciones por letra inicial del artista y nombre.
+*Función:buscar_por_artista
+*DescripciónBusca canciones por letra inicial del artista y nombre.
 
 Función:buscar_por_genero
 DescripciónBusca canciones por género y letra inicial del título, guarda resultados en un archivo.
@@ -192,14 +192,15 @@ mismas y al momento de ser mostradas sea una cantidad mas facil de procesar para
 al momento de ser presentadas, para facilitar la experiencia del usuario, por ultimo guarda los resultados en un archivo de texto.
 
 *Ejemplo:
-*.Seleccione una opción: 2
-*.Géneros disponibles:
-*.Pop (50)   Rock (30)   Jazz (20)   Hip Hop (40)
-*.Ingrese el género a buscar (o 'q' para cancelar): Pop
-*.Ingrese la letra inicial (A-Z, o 'q' para cancelar): S
-*.Canciones del género 'Pop' que comienzan con 'S':
-*.Shape of You (ID: 200) | Sorry (ID: 201) | Starboy (ID: 202) | ...
-*.Presione una tecla para continuar...
+
+- Seleccione una opción: 2
+* Géneros disponibles:
+- Pop (50)   Rock (30)   Jazz (20)   Hip Hop (40)
+*Ingrese el género a buscar (o 'q' para cancelar): Pop
+*Ingrese la letra inicial (A-Z, o 'q' para cancelar): S
+*Canciones del género 'Pop' que comienzan con 'S':
+*Shape of You (ID: 200) | Sorry (ID: 201) | Starboy (ID: 202) | ...
+*Presione una tecla para continuar...
 
 
 3. Buscar por Tempo
