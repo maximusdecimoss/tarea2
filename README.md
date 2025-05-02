@@ -109,10 +109,10 @@ Para la organizacion de los distintos datos se opto porla creacion de varios map
 
 Mapas:
 
-canciones_by_id: Mapa de ID a canciones (clave: int, valor: Song*).
-canciones_by_genero: Mapa de género a lista de canciones (clave: char*, valor: List*).
-canciones_by_artista: Mapa de artista a lista de canciones (clave: char*, valor: List*).
-playlists: Mapa de nombre de lista a lista de canciones (clave: char*, valor: List*).
+1. canciones_by_id: Mapa de ID a canciones (clave: int, valor: Song*).
+2. canciones_by_genero: Mapa de género a lista de canciones (clave: char*, valor: List*).
+3. canciones_by_artista: Mapa de artista a lista de canciones (clave: char*, valor: List*).
+4. playlists: Mapa de nombre de lista a lista de canciones (clave: char*, valor: List*).
 
 Funciones Principales:
 
