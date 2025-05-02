@@ -29,11 +29,11 @@ Requisitos
 Sistema Operativo: Windows (probado en Windows 10).
 Visual Code Studio o cualquier entorno que permita trabajar con C o Compilador: GCC (MinGW o similar).
 Archivos Necesarios:
-TDAs/tarea2.c: Código fuente principal.
-TDAs/tdas/list.c, TDAs/tdas/list.h: Implementación de listas.
-TDAs/tdas/map.c, TDAs/tdas/map.h: Implementación de mapas.
-TDAs/tdas/extra.c, TDAs/tdas/extra.h: Funciones auxiliares para CSV.
-TDAs/song_dataset_.csv: Archivo CSV con datos de canciones (ubicado en C:\Users\<tu_usuario>\OneDrive\Desktop\tarea2\TDAs\).
+1. TDAs/tarea2.c: Código fuente principal.
+2. TDAs/tdas/list.c, TDAs/tdas/list.h: Implementación de listas.
+3. TDAs/tdas/map.c, TDAs/tdas/map.h: Implementación de mapas.
+4. TDAs/tdas/extra.c, TDAs/tdas/extra.h: Funciones auxiliares para CSV.
+5. TDAs/song_dataset_.csv: Archivo CSV con datos de canciones (ubicado en C:\Users\<tu_usuario>\OneDrive\Desktop\tarea2\TDAs\).
 
 Instalación
 Clona o descarga el proyecto:
