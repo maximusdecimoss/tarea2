@@ -116,43 +116,43 @@ Mapas:
 
 Funciones Principales:
 
-Función:leer_canciones
-Descripción:Carga canciones desde el CSV y las organiza en mapas.
+*Función:leer_canciones
+*Descripción:Carga canciones desde el CSV y las organiza en mapas.
 
-Función:buscar_por_artista
-DescripciónBusca canciones por letra inicial del artista y nombre.
+*Función:buscar_por_artista
+*DescripciónBusca canciones por letra inicial del artista y nombre.
 
 Función:buscar_por_genero
 DescripciónBusca canciones por género y letra inicial del título, guarda resultados en un archivo.
 
-Función:buscar_por_tempo
-DescripciónBusca canciones en un rango de tempo (mínimo y máximo).
+*Función:buscar_por_tempo
+*DescripciónBusca canciones en un rango de tempo (mínimo y máximo).
 
-Función:crear_lista_reproduccion
-DescripciónCrea una nueva lista de reproducción con un nombre único.
+*Función:crear_lista_reproduccion
+*DescripciónCrea una nueva lista de reproducción con un nombre único.
 
-Función:agregar_cancion_a_lista
-DescripciónAgrega canciones por ID a una lista existente.
+*Función:agregar_cancion_a_lista
+*DescripciónAgrega canciones por ID a una lista existente.
 
-Función:mostrar_lista_reproduccion
-DescripciónMuestra las canciones de una lista con detalles.
+*Función:mostrar_lista_reproduccion
+*DescripciónMuestra las canciones de una lista con detalles.
 
-Función:guardar_lista_reproduccion
-DescripciónGuarda una lista en un archivo CSV.
+*Función:guardar_lista_reproduccion
+*DescripciónGuarda una lista en un archivo CSV.
 
-Función:testear_datos_aleatorios
-DescripciónGenera canciones aleatorias para pruebas.
+*Función:testear_datos_aleatorios
+*DescripciónGenera canciones aleatorias para pruebas.
 
-Función:liberar_canciones
-DescripciónLibera la memoria de todos los mapas.
+*Función:liberar_canciones
+*DescripciónLibera la memoria de todos los mapas.
 
 Funciones Auxiliares
 
-Entrada: leer_cadena, leer_numero, leer_caracter, leer_tempo, es_numero_valido.
+*Entrada: leer_cadena, leer_numero, leer_caracter, leer_tempo, es_numero_valido.
 
-Validación: es_cadena_valida, clasificar_tempo, validar_rango_tempo.
+*Validación: es_cadena_valida, clasificar_tempo, validar_rango_tempo.
 
-Utilidades: limpiar_buffer, mostrar_categorias_tempo, filtrar_y_mostrar_canciones_por_tempo.
+*Utilidades: limpiar_buffer, mostrar_categorias_tempo, filtrar_y_mostrar_canciones_por_tempo.
 
 El código está modularizado, con funciones específicas para cada tarea, y comentarios en las lineas mas complejas del codigo, que explican su propósito de la forma mas clara posible, sin lengujae muy tecnico, ya que al tratarse de una apliacion que gestionara musica, se espera que los usuarios que haran uso de la misma no esten 
 ilustrados con la jerga utilizada en el ambito informartico, de alli la decision de comentar las lineas del mismo.
