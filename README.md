@@ -194,35 +194,36 @@ al momento de ser presentadas, para facilitar la experiencia del usuario, por ul
 *Ejemplo:
 
 - Seleccione una opción: 2
-* Géneros disponibles:
+- Géneros disponibles:
 - Pop (50)   Rock (30)   Jazz (20)   Hip Hop (40)
-*Ingrese el género a buscar (o 'q' para cancelar): Pop
-*Ingrese la letra inicial (A-Z, o 'q' para cancelar): S
-*Canciones del género 'Pop' que comienzan con 'S':
-*Shape of You (ID: 200) | Sorry (ID: 201) | Starboy (ID: 202) | ...
-*Presione una tecla para continuar...
+- Ingrese el género a buscar (o 'q' para cancelar): Pop
+- Ingrese la letra inicial (A-Z, o 'q' para cancelar): S
+- Canciones del género 'Pop' que comienzan con 'S':
+- Shape of You (ID: 200) | Sorry (ID: 201) | Starboy (ID: 202) | ...
+- Presione una tecla para continuar...
 
 
 3. Buscar por Tempo
-   
-*Descripción: Muestra un cuadro de texto con las categorías de tempo (Lentas <80 BPM, Moderadas 80-120 BPM, Rápidas >120 BPM), pide un rango de tempo y
+
+* Descripción: Muestra un cuadro de texto con las categorías de tempo (Lentas <80 BPM, Moderadas 80-120 BPM, Rápidas >120 BPM), pide un rango de tempo y
 muestra canciones en ese rango. Debido a que la cantidad de canciones son muchas, se penso en modificar la funcion, pidiendo un rango de tempo minimo y
 un rango maximo, filtrando de esta forma aun mas la cantidad de datos a mostrar y acercandonos de mejor forma con las exigencias esperadas por el usuario.
 Las canciones se imprimiran al final con la informarcion respectiva a su clasificacion por tempo.
 
-*Ejemplo:
-*Seleccione una opción: 3
-*Rangos de tempo disponibles:
-*Lentas (Tempo menos de 80 BPM)
-*Moderadas (Tempo entre 80 y 120 BPM)
-*Rápidas (Tempo mayor a 120 BPM)
-*Ingrese el rango de tempo:
-*Tempo mínimo (o 'q' para cancelar): 80
-*Tempo máximo (o 'q' para cancelar): 120
-*Canciones en el rango de tempo 80 - 120:
-*1. Shape of You (ID: 200, Tempo: 96.00, Clasificación: Moderada)
-*2. Uptown Funk (ID: 201, Tempo: 115.00, Clasificación: Moderada)
-*Presione una tecla para continuar...
+* Ejemplo:
+- Seleccione una opción: 3
+- Rangos de tempo disponibles:
+- Lentas (Tempo menos de 80 BPM)
+- Moderadas (Tempo entre 80 y 120 BPM)
+- Rápidas (Tempo mayor a 120 BPM)
+- Ingrese el rango de tempo:
+- Tempo mínimo (o 'q' para cancelar): 80
+- Tempo máximo (o 'q' para cancelar): 120
+- Canciones en el rango de tempo 80 - 120:
+  
+- Shape of You (ID: 200, Tempo: 96.00, Clasificación: Moderada)
+- Uptown Funk (ID: 201, Tempo: 115.00, Clasificación: Moderada)
+- Presione una tecla para continuar...
 
 
 4. Crear Nueva Lista de Reproducción
@@ -230,30 +231,32 @@ Las canciones se imprimiran al final con la informarcion respectiva a su clasifi
 *Descripción: Crea una lista de reproducción con un nombre único.
 
 *Ejemplo:
-*Seleccione una opción: 4
-*Ingrese el nombre de la nueva lista de reproducción (o 'q' para cancelar): MiLista
-*Lista de reproducción 'MiLista' creada exitosamente.
-*Presione una tecla para continuar...
+
+- Seleccione una opción: 4
+- Ingrese el nombre de la nueva lista de reproducción (o 'q' para cancelar): MiLista
+- Lista de reproducción 'MiLista' creada exitosamente.
+- Presione una tecla para continuar...
 
 
 5. Agregar Canción a Lista de Reproducción
    
 *Descripción: Muestra las listas disponibles para mayor practicidad del usuario, pide el nombre de una lista y los IDs de canciones para agregar.Luego de ingresada
-*la cancion se despliega una barra de texto que preguntara si desea ingresar mas canciones en la lista, de ser si debe ingresar un nuevo ID,de ser no redirigira al
-*menu principal.
+la cancion se despliega una barra de texto que preguntara si desea ingresar mas canciones en la lista, de ser si debe ingresar un nuevo ID,de ser no redirigira al
+menu principal.
 
-*Ejemplo:
-*Seleccione una opción: 5
-*Listas de reproducción disponibles:
-*- MiLista
-*Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): MiLista
-*Ingrese el ID de la canción (o 'q' para cancelar): 123
-*Canción 'Bad Guy' agregada a la lista 'MiLista'.
-*¿Desea agregar otra canción a la lista 'MiLista'? (s/n): s
-*Ingrese el ID de la canción (o 'q' para cancelar): 124
-*Canción 'Lovely' agregada a la lista 'MiLista'.
-*¿Desea agregar otra canción a la lista 'MiLista'? (s/n): n
-*Presione una tecla para continuar...
+* Ejemplo:
+
+- Seleccione una opción: 5
+- Listas de reproducción disponibles:
+- MiLista
+- Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): MiLista
+- Ingrese el ID de la canción (o 'q' para cancelar): 123
+- Canción 'Bad Guy' agregada a la lista 'MiLista'.
+- ¿Desea agregar otra canción a la lista 'MiLista'? (s/n): s
+- Ingrese el ID de la canción (o 'q' para cancelar): 124
+- Canción 'Lovely' agregada a la lista 'MiLista'.
+- ¿Desea agregar otra canción a la lista 'MiLista'? (s/n): n
+- Presione una tecla para continuar...
 
 
 6. Mostrar Canciones de una Lista de Reproducción
@@ -261,15 +264,16 @@ Las canciones se imprimiran al final con la informarcion respectiva a su clasifi
 *Descripción: Mostrara las distintas listas creadas con anticipacion, seleccionada la lista en cuestion mostrara las canciones de una esta
 con informacion adicional de las mismas (título, ID, tempo, género).
 
-*Ejemplo:
-*Seleccione una opción: 6
-*Listas de reproducción disponibles:
-*- MiLista
-*Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): MiLista
-*Canciones en la lista de reproducción 'MiLista':
-*- Bad Guy (ID: 123, Tempo: 135.00, Género: Pop)
-*- Lovely (ID: 124, Tempo: 75.00, Género: Pop)
-*Presione una tecla para continuar...
+* Ejemplo:
+
+- Seleccione una opción: 6
+- Listas de reproducción disponibles:
+- MiLista
+- Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): MiLista
+- Canciones en la lista de reproducción 'MiLista':
+- Bad Guy (ID: 123, Tempo: 135.00, Género: Pop)
+- Lovely (ID: 124, Tempo: 75.00, Género: Pop)
+- Presione una tecla para continuar...
 
 
 7. Guardar Lista de Reproducción
@@ -277,49 +281,52 @@ con informacion adicional de las mismas (título, ID, tempo, género).
 *Descripción: Guarda una lista de reproducción en un archivo CSV con columnas ID, título, tempo y género. Esta opcion se agrego de forma adicional, con la finalidad de
 almacenar en el tiempo los datos de las listas creadas por el usuario por si en un futuro desea hacer uso de la informacion de las mismas.
 
-*Ejemplo:
-*Seleccione una opción: 7
-*Ingrese el nombre de la lista de reproducción a guardar (o 'q' para cancelar): MiLista
-*Lista de reproducción 'MiLista' guardada en el archivo 'MiLista.csv'.
-*Presione una tecla para continuar...
+* Ejemplo:
 
-*Contenido de MiLista.csv:
-*ID,Title,Tempo,Género
-*123,Bad Guy,135.00,Pop
-*124,Lovely,75.00,Pop
+- Seleccione una opción: 7
+- Ingrese el nombre de la lista de reproducción a guardar (o 'q' para cancelar): MiLista
+- Lista de reproducción 'MiLista' guardada en el archivo 'MiLista.csv'.
+- Presione una tecla para continuar...
+
+- Contenido de MiLista.csv:
+- ID,Title,Tempo,Género
+- 123,Bad Guy,135.00,Pop
+- 124,Lovely,75.00,Pop
 
 
-*8. Testear con Datos Aleatorios
+8. Testear con Datos Aleatorios
 
-*Descripción: Genera canciones aleatorias con títulos, artistas, géneros y tempos, y opcionalmente las agrega a una lista de reproducción. Esta funcion se creo con la
+* Descripción: Genera canciones aleatorias con títulos, artistas, géneros y tempos, y opcionalmente las agrega a una lista de reproducción. Esta funcion se creo con la
 intencion de hacer testeo de las opciones 5,6,7 que manejan directamente las listas de reproduccion, esto con la finalidad de agilizar los procesos de testeo y no tener
 que ingresar dato a dato para la creacion de listas de reproduccion.
 
-*Ejemplo:
-*Seleccione una opción: 8
-*Ingrese el número de canciones aleatorias a generar (o 'q' para cancelar): 40
-*¿Desea agregar las canciones generadas a una lista de reproducción? (s/n): s
-*Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): TestLista
-Lista de reproducción 'TestLista' creada.
-*Se generaron 40 canciones aleatorias.
-*Las canciones fueron agregadas a la lista 'TestLista'.
-*Presione una tecla para continuar...
+* Ejemplo:}
+  
+- Seleccione una opción: 8
+- Ingrese el número de canciones aleatorias a generar (o 'q' para cancelar): 40
+- ¿Desea agregar las canciones generadas a una lista de reproducción? (s/n): s
+- Ingrese el nombre de la lista de reproducción (o 'q' para cancelar): TestLista
+- Lista de reproducción 'TestLista' creada.
+- Se generaron 40 canciones aleatorias.
+- Las canciones fueron agregadas a la lista 'TestLista'.
+- Presione una tecla para continuar...
 
 
 9. Salir
     
 *Descripción: Cierra el programa y libera toda la memoria.
 
-*Ejemplo:
-*Seleccione una opción: 9
-*Saliendo...
+* Ejemplo:
+
+- Seleccione una opción: 9
+- Saliendo...
 
 A mejorar:
 
-*Implementar una interfaz de usuario más amigable.
-*Permitir la opcion de testeo para todo el codigo.
-*Mostrar por pantalla las canciones organizadas por artistas, y estos a su vez organizados por pais de origen.
-*Mostrar por pantalla las canciones organizadas por idioma.
+- Implementar una interfaz de usuario más amigable.
+- Permitir la opcion de testeo para todo el codigo.
+- Mostrar por pantalla las canciones organizadas por artistas, y estos a su vez organizados por pais de origen.
+- Mostrar por pantalla las canciones organizadas por idioma.
 
 Observación: El codigo a lo largo de su implementación cuenta con comentarios en varias de sus linea que serviran para que cualquier 
 persona que desee posiblemente intentar entender el funcionamiento del mismo, se busco hacer uso de nombre 
